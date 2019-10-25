@@ -209,7 +209,7 @@ sub prepare_kgraft {
     #add repository with tested patch
     my @repos = split(",", $repo);
     while (my ($i, $val) = each(@repos)) {
-        zypper_call("ar $val kgraft-test-repo-$i");
+        zypper_call("ar --no-gpgcheck $val kgraft-test-repo-$i");
 
         my $kversion = zypper_search(q(-s -x kernel-default));
         my $pversion = zypper_search("-s -t package -r kgraft-test-repo-$i");
