@@ -111,6 +111,7 @@ sub run {
     change_repos_state($repos, 'enable');
 
     zypper_call("in -l -t patch ${patches}", exitcode => [0, 102, 103], log => 'zypper.log', timeout => 1500);
+    upload_logs('/boot/grub2/grub.cfg', failok => 1);
 
     prepare_system_shutdown;
     power_action("reboot");
