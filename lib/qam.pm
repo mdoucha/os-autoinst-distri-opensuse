@@ -229,8 +229,7 @@ sub get_patches {
         my @tokens = split /\s*\|\s*/, $line;
         next if $#tokens < max(ZYPPER_PACKAGE_COL, $status_col);
         my $packname = $tokens[ZYPPER_PACKAGE_COL];
-        push @patch_list, $packname if $packname =~ m/$incident_id/ &&
-          'needed' eq lc $tokens[$status_col];
+        push @patch_list, $packname if $packname =~ m/$incident_id/;
     }
 
     return join(' ', @patch_list);
