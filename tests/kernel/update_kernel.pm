@@ -221,6 +221,9 @@ sub prepare_kgraft {
         my $wanted_version = right_kversion($kversion, $pversion);
         fully_patch_system;
         install_lock_kernel($wanted_version);
+        zypper_call("mr -e kgraft-test-repo-$i");
+        zypper_call("in -l " . $pversion);
+        zypper_call("mr -d kgraft-test-repo-$i");
 
         if (check_var('REMOVE_KGRAFT', '1')) {
             zypper_call("rm " . $pversion);
