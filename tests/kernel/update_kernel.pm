@@ -36,7 +36,7 @@ sub first_azure_release {
 
     my @repos = split(",", $repo);
     while (my ($i, $val) = each(@repos)) {
-        zypper_call("ar $val kernel-update-$i");
+        zypper_call("ar --no-gpgcheck $val kernel-update-$i");
     }
 
     zypper_call("ref");
@@ -57,7 +57,7 @@ sub update_kernel {
 
     my @repos = split(",", $repo);
     while (my ($i, $val) = each(@repos)) {
-        zypper_call("ar $val kernel-update-$i");
+        zypper_call("ar --no-gpgcheck $val kernel-update-$i");
     }
     zypper_call("ref");
 
