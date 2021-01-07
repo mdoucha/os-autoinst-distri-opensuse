@@ -50,7 +50,7 @@ sub prepare_azure {
     remove_kernel_packages();
     zypper_call("in -l kernel-azure", exitcode => [0, 100, 101, 102, 103], timeout => 700);
     power_action('reboot', textmode => 1);
-    boot_to_console($self);
+    boot_to_console($self, 0);
 }
 
 sub update_kernel {
@@ -339,16 +339,23 @@ sub install_kotd {
 }
 
 sub boot_to_console {
-    my ($self) = @_;
-    $self->wait_boot unless check_var('BACKEND', 'ipmi') && get_var('LTP_BAREMETAL');
+    my ($self, $first_boot) = @_;
+
+    $self->wait_boot;
+    prepare_serial_console if $first_boot;
     $self->select_serial_terminal;
 }
 
 sub run {
     my $self = shift;
 
-    prepare_serial_console;
-    boot_to_console($self);
+    if (check_var('BACKEND', 'ipmi') && get_var('LTP_BAREMETAL')) {
+        # System is already booted after installation, just switch terminal
+        prepare_serial_console;
+        $self->select_serial_terminal;
+    } else {
+        boot_to_console($self, 1);
+    }
 
     my $repo        = get_var('KOTD_REPO');
     my $incident_id = undef;
@@ -359,7 +366,7 @@ sub run {
 
     if (get_var('KGRAFT')) {
         my $incident_klp_pkg = prepare_kgraft($repo, $incident_id);
-        boot_to_console($self);
+        boot_to_console($self, 0);
 
         if (!check_var('REMOVE_KGRAFT', '1')) {
             # dependencies for heavy load script
