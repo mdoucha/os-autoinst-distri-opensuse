@@ -22,6 +22,7 @@ use kernel 'remove_kernel_packages';
 use klp;
 use power_action_utils 'power_action';
 use repo_tools 'add_qa_head_repo';
+use serial_terminal 'prepare_serial_console';
 use Utils::Backends 'use_ssh_serial_console';
 
 
@@ -340,16 +341,13 @@ sub install_kotd {
 sub boot_to_console {
     my ($self) = @_;
     $self->wait_boot unless check_var('BACKEND', 'ipmi') && get_var('LTP_BAREMETAL');
-    if (check_var('BACKEND', 'ipmi')) {
-        use_ssh_serial_console;
-    }
-    else {
-        select_console('root-console');
-    }
+    $self->select_serial_terminal;
 }
 
 sub run {
     my $self = shift;
+
+    prepare_serial_console;
     boot_to_console($self);
 
     my $repo        = get_var('KOTD_REPO');
