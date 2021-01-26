@@ -47,13 +47,12 @@ sub run {
 
     # download ghostscript converter script and test if download succeeded
     # switch to right directory and create files which can be accessed by test user
-    script_run "cd /home/$username";
+    assert_script_run 'cd ~' . $testapi::username;
     assert_script_run "wget " . data_url("ghostscript/$gs_script");
     assert_script_run "test -s $gs_script";
 
     # convert example *.ps files to *.pdf
     assert_script_run "sh ./$gs_script";
-    # assert_script_run "cp alphabet.pdf /tmp";
 
     # show the resulting logfile onthe screen for reference and upload logs
     script_run "cat $gs_log";
