@@ -21,8 +21,10 @@
       <li><a href="#has_serial_over_ssh">has_serial_over_ssh</a></li>
       <li><a href="#is_hyperv">is_hyperv</a></li>
       <li><a href="#is_hyperv_in_gui">is_hyperv_in_gui</a></li>
+      <li><a href="#is_xen_pv">is_xen_pv</a></li>
       <li><a href="#is_svirt_except_s390x">is_svirt_except_s390x</a></li>
       <li><a href="#is_pvm">is_pvm</a></li>
+      <li><a href="#is_ipmi">is_ipmi</a></li>
     </ul>
   </li>
 </ul><h1>lib/Utils/Backends.pm</h1>
@@ -57,6 +59,10 @@
 
 <p>Returns true if the current instance is running as hyperv gui backend</p>
 
+<h2 id="is_xen_pv">is_xen_pv</h2>
+
+<p>Returns true if the current VM runs in Xen host in paravirtual mode</p>
+
 <h2 id="is_svirt_except_s390x">is_svirt_except_s390x</h2>
 
 <p>Returns true if the current instance is running as svirt backend except s390x</p>
@@ -64,6 +70,10 @@
 <h2 id="is_pvm">is_pvm</h2>
 
 <p>Returns true if the current instance is running as PowerVM backend &#39;spvm&#39; or &#39;hmc_pvm&#39;</p>
+
+<h2 id="is_ipmi">is_ipmi</h2>
+
+<p>Returns true if the current instance is running as ipmi backend</p>
 
 
 </body>
