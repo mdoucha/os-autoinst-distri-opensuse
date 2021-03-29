@@ -608,7 +608,15 @@ if (is_jeos) {
 }
 
 # load the tests in the right order
-if (is_kernel_test()) {
+if (get_var('OPENQA_SELFTEST') eq 'snapshots') {
+    loadtest('selftest/snapshots/boot');
+    loadtest('selftest/snapshots/setup');
+    loadtest('selftest/snapshots/check', name => 'check_pre_rollback');
+    loadtest('selftest/snapshots/check', name => 'check_post_rollback');
+    loadtest('selftest/snapshots/crash', name => 'bang');
+    loadtest('selftest/snapshots/check', name => 'check_post_crash');
+}
+elsif (is_kernel_test()) {
     load_kernel_tests();
 }
 elsif (get_var("NFV")) {
