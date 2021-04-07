@@ -35,6 +35,7 @@ sub run {
     }
 
     $self->select_serial_terminal;
+    script_run('zypper clean');
     script_run('zypper ref');
     zypper_call('--no-refresh in yast2-installation');
     fully_patch_system;
