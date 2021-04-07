@@ -16,6 +16,7 @@ use base 'opensusebasetest';
 use testapi;
 use utils;
 use version_utils 'is_jeos';
+use power_action_utils 'power_action';
 
 sub run {
     my ($self) = @_;
