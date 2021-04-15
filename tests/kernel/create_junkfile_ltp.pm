@@ -20,6 +20,10 @@ sub run {
     my $pdir   = '$TMPDIR/aiodio.$$';
     my $dir    = '$TMPDIR/aiodio';
 
+    script_run('export OPENQA_MODULE=create_junkfile_before');
+    assert_script_run('echo create_junkfile_before >/root/openqa_module.txt');
+    assert_script_run('sync');
+
     assert_script_run("mkdir -p $pdir/junkdir $dir");
     assert_script_run("dd if=/dev/urandom of=$pdir/junkfile oflag=sync bs=1M count=26");
     upload_logs("$pdir/junkfile", failok => 1);
@@ -29,6 +33,10 @@ sub run {
     for my $f ([2, '2K'], [3, '1K'], [4, '512'], [5, '4K']) {
         assert_script_run("dd if=$pdir/junkfile of=$dir/file$f->[0] bs=$f->[1] conv=block,sync");
     }
+
+    script_run('export OPENQA_MODULE=create_junkfile_after');
+    assert_script_run('echo create_junkfile_after >/root/openqa_module.txt');
+    assert_script_run('echo foo >/root/openqa_smoketest.txt');
 }
 
 sub test_flags {

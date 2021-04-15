@@ -301,6 +301,10 @@ sub run {
     my $test               = $tinfo->test;
     my %env                = %{$test_result_export->{environment}};
 
+    script_run('echo $OPENQA_MODULE');
+    script_run('cat /root/openqa_module.txt');
+    script_run('cat /root/openqa_smoketest.txt');
+
     $env{retval}       = 'undefined';
     $self->{ltp_env}   = \%env;
     $self->{ltp_tinfo} = $tinfo;

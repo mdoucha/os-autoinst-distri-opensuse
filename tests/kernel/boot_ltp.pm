@@ -50,6 +50,10 @@ sub run {
     upload_logs('/boot/config-$(uname -r)', failok => 1);
     init_ltp_tests($cmd_file);
 
+    script_run('export OPENQA_MODULE=boot_ltp');
+    assert_script_run('echo boot_ltp >/root/openqa_module.txt');
+    assert_script_run('sync');
+
     # If the command file (runtest file) is set then we dynamically schedule
     # the test and shutdown modules.
     schedule_tests($cmd_file) if $cmd_file;
