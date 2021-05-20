@@ -22,7 +22,7 @@ sub run {
 
     script_run('export OPENQA_MODULE=create_junkfile_before');
     assert_script_run('echo create_junkfile_before >/root/openqa_module.txt');
-    assert_script_run('sync');
+    #assert_script_run('sync');
 
     assert_script_run("mkdir -p $pdir/junkdir $dir");
     assert_script_run("dd if=/dev/urandom of=$pdir/junkfile oflag=sync bs=1M count=26");
