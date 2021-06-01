@@ -247,7 +247,10 @@ sub schedule_tests {
     $test_result_export->{environment} = $environment;
 
     if ($cmd_file =~ m/ltp-aiodio.part[134]/) {
+        my $test = {name => 'writev03', command => 'writev03'};
+        my $tinfo = testinfo($test_result_export, test => $test, runfile => $cmd_file);
         loadtest_kernel 'create_junkfile_ltp';
+        loadtest_runltp($test->{name}, $tinfo);
     }
 
     if ($cmd_file =~ m/lvm\.local/) {
