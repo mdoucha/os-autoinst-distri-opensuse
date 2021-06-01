@@ -42,7 +42,8 @@ sub run {
     $self->select_serial_terminal;
     assert_secureboot_status(1) if (get_var('SECUREBOOT'));
 
-    zypper_call 'up qa_test_ltp';
+    #zypper_call 'up qa_test_ltp';
+    zypper_call 'dup';
     script_run("rpm -qi qa_test_ltp >" . get_ltp_version_file());
     log_versions;
 
