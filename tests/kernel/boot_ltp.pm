@@ -43,6 +43,7 @@ sub run {
     assert_secureboot_status(1) if (get_var('SECUREBOOT'));
 
     zypper_call 'up qa_test_ltp';
+    script_run("rpm -qi qa_test_ltp >" . get_ltp_version_file());
     log_versions;
 
     # check kGraft patch if KGRAFT=1
