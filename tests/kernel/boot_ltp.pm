@@ -18,7 +18,7 @@ use base 'opensusebasetest';
 use testapi;
 use LTP::utils;
 use version_utils 'is_jeos';
-use utils 'assert_secureboot_status';
+use utils;
 
 sub run {
     my ($self) = @_;
@@ -42,6 +42,7 @@ sub run {
     $self->select_serial_terminal;
     assert_secureboot_status(1) if (get_var('SECUREBOOT'));
 
+    zypper_call 'up qa_test_ltp';
     log_versions;
 
     # check kGraft patch if KGRAFT=1
