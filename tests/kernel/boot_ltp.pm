@@ -49,6 +49,7 @@ sub run {
     script_run("rpm -qi qa_test_ltp >" . get_ltp_version_file());
     power_action('reboot', textmode => 1);
     $self->wait_boot(ready_time => 1800);
+    $self->select_serial_terminal;
     log_versions;
 
     # check kGraft patch if KGRAFT=1
