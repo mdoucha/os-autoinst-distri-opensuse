@@ -19,6 +19,7 @@ use testapi;
 use LTP::utils;
 use version_utils 'is_jeos';
 use utils;
+use power_action_utils 'power_action';
 
 sub run {
     my ($self) = @_;
@@ -43,8 +44,11 @@ sub run {
     assert_secureboot_status(1) if (get_var('SECUREBOOT'));
 
     #zypper_call 'up qa_test_ltp';
-    zypper_call 'dup';
+    #zypper_call 'dup';
+    zypper_call 'up kernel-default';
     script_run("rpm -qi qa_test_ltp >" . get_ltp_version_file());
+    power_action('reboot', textmode => 1);
+    $self->wait_boot(ready_time => 1800);
     log_versions;
 
     # check kGraft patch if KGRAFT=1
