@@ -44,8 +44,8 @@ sub run {
     assert_secureboot_status(1) if (get_var('SECUREBOOT'));
 
     #zypper_call 'up qa_test_ltp';
-    #zypper_call 'dup';
-    zypper_call 'up kernel-default';
+    zypper_call 'dup';
+    #zypper_call 'up kernel-default';
     script_run("rpm -qi qa_test_ltp >" . get_ltp_version_file());
     power_action('reboot', textmode => 1);
     $self->wait_boot(ready_time => 1800);
