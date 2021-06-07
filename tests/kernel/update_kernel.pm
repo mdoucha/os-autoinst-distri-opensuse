@@ -57,10 +57,11 @@ sub prepare_azure {
 sub prepare_kernel_base {
     my $self = shift;
 
+    fully_patch_system;
     remove_kernel_packages();
     zypper_call("in -l kernel-default-base", exitcode => [0, 100, 101, 102, 103], timeout => 700);
-    power_action('reboot', textmode => 1);
-    boot_to_console($self);
+    #power_action('reboot', textmode => 1);
+    #boot_to_console($self);
 }
 
 sub update_kernel {
