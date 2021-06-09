@@ -26,6 +26,10 @@ use power_action_utils 'power_action';
 use repo_tools 'add_qa_head_repo';
 use Utils::Backends 'use_ssh_serial_console';
 
+sub scan_bootdir {
+    script_run('ls /boot');
+    script_run('rpm -qf --qf "%{NAME}\n" /boot/* |sort -u');
+}
 
 # kernel-azure is never released in pool, first release is in updates.
 # Fix the chicken & egg problem manually.
@@ -50,6 +54,7 @@ sub prepare_azure {
 
     remove_kernel_packages();
     zypper_call("in -l kernel-azure", exitcode => [0, 100, 101, 102, 103], timeout => 700);
+    scan_bootdir;
     power_action('reboot', textmode => 1);
     boot_to_console($self);
 }
@@ -59,6 +64,7 @@ sub prepare_kernel_base {
 
     remove_kernel_packages();
     zypper_call("in -l kernel-default-base", exitcode => [0, 100, 101, 102, 103], timeout => 700);
+    scan_bootdir;
     power_action('reboot', textmode => 1);
     boot_to_console($self);
 }
@@ -270,6 +276,7 @@ sub prepare_kgraft {
         zypper_call("rm " . $pversion);
     }
 
+    scan_bootdir;
     power_action('reboot', textmode => 1);
 
     return $incident_klp_pkg;
@@ -381,6 +388,8 @@ sub run {
         $incident_id = get_required_var('INCIDENT_ID');
     }
 
+    scan_bootdir;
+
     if (get_var('KGRAFT')) {
         my $incident_klp_pkg = prepare_kgraft($repo, $incident_id);
         boot_to_console($self);
@@ -420,6 +429,8 @@ sub run {
     else {
         update_kernel($repo, $incident_id);
     }
+
+    scan_bootdir;
 
     if (!get_var('KGRAFT')) {
         power_action('reboot', textmode => 1);
