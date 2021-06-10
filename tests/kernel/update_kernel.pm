@@ -70,7 +70,7 @@ sub prepare_kernel_base {
     my $self = shift;
 
     remove_kernel_packages();
-    zypper_call("in -l --name kernel-default-base", exitcode => [0, 100, 101, 102, 103], timeout => 700, log => 'zypper.log');
+    zypper_call("-vv in -l --name kernel-default-base", exitcode => [0, 100, 101, 102, 103], timeout => 700, log => 'zypper.log');
     check_kernel_package('kernel-default-base');
     power_action('reboot', textmode => 1);
     boot_to_console($self);
