@@ -73,6 +73,7 @@ sub prepare_kernel_base {
     zypper_call("in --debug-solver -l --name kernel-default-base", exitcode => [0, 100, 101, 102, 103], timeout => 700);
     assert_script_run('tar cJf /root/zypper-debug.tar.xz /var/log/zypper.solverTestCase');
     upload_logs('/root/zypper-debug.tar.xz');
+    upload_logs('/var/log/zypper.log', failok => 1);
     check_kernel_package('kernel-default-base');
     power_action('reboot', textmode => 1);
     boot_to_console($self);
