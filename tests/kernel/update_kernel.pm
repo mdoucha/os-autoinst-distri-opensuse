@@ -52,7 +52,7 @@ sub first_azure_release {
     }
 
     zypper_call("ref");
-    zypper_call("in -l kernel-azure", exitcode => [0, 100, 101, 102, 103], timeout => 700);
+    zypper_call("in -l --name kernel-azure", exitcode => [0, 100, 101, 102, 103], timeout => 700);
     zypper_call('in kernel-devel');
 }
 
@@ -60,7 +60,7 @@ sub prepare_azure {
     my $self = shift;
 
     remove_kernel_packages();
-    zypper_call("in -l kernel-azure", exitcode => [0, 100, 101, 102, 103], timeout => 700);
+    zypper_call("in -l --name kernel-azure", exitcode => [0, 100, 101, 102, 103], timeout => 700);
     check_kernel_package('kernel-azure');
     power_action('reboot', textmode => 1);
     boot_to_console($self);
@@ -70,7 +70,7 @@ sub prepare_kernel_base {
     my $self = shift;
 
     remove_kernel_packages();
-    zypper_call("in -l kernel-default-base", exitcode => [0, 100, 101, 102, 103], timeout => 700);
+    zypper_call("in -l --name kernel-default-base", exitcode => [0, 100, 101, 102, 103], timeout => 700);
     check_kernel_package('kernel-default-base');
     power_action('reboot', textmode => 1);
     boot_to_console($self);
