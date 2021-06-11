@@ -70,6 +70,7 @@ sub prepare_kernel_base {
     my $self = shift;
 
     remove_kernel_packages();
+    script_run('rpm -qa --info --requires');
     zypper_call("in --debug-solver -l --name kernel-default-base", exitcode => [0, 100, 101, 102, 103], timeout => 700);
     assert_script_run('tar cJf /root/zypper-debug.tar.xz /var/log/zypper.solverTestCase');
     upload_logs('/root/zypper-debug.tar.xz');
