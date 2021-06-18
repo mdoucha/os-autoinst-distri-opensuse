@@ -62,7 +62,7 @@ sub prepare_kernel_base {
 
     my @repos = split(",", $repo);
     while (my ($i, $val) = each(@repos)) {
-        zypper_call("ar $val kernel-update-$i");
+        zypper_ar($val, name => "kernel-update-$i", priority => 90);
     }
     zypper_call("ref");
     zypper_call("in -l kernel-default-base", exitcode => [0, 100, 101, 102, 103], timeout => 700);
