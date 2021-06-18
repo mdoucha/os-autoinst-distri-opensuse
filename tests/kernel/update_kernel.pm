@@ -352,7 +352,12 @@ sub install_kotd {
     my $repo = shift;
     fully_patch_system;
     remove_kernel_packages;
-    zypper_ar($repo, name => 'KOTD', priority => 90, no_gpg_check => 1);
+
+    my @repos = split(",", $repo);
+    while (my ($i, $val) = each(@repos)) {
+        zypper_ar($val, name => "kernel-update-$i", priority => 90);
+    }
+
     zypper_call("in -l kernel-default kernel-devel");
 }
 
@@ -424,7 +429,8 @@ sub run {
         install_kotd($repo);
     }
     else {
-        update_kernel($repo, $incident_id);
+        install_kotd($repo);
+        #update_kernel($repo, $incident_id);
     }
 
     if (!get_var('KGRAFT')) {
