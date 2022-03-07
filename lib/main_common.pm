@@ -2551,27 +2551,15 @@ sub load_mitigation_tests {
     if (get_var('MITIGATION_ENV_SETUP')) {
         loadtest "cpu_bugs/mitigation_env_setup";
     }
-    if (get_var('MELTDOWN')) {
-        loadtest "cpu_bugs/meltdown";
-    }
-    if (get_var('SPECTRE_V2')) {
-        loadtest "cpu_bugs/spectre_v2";
-    }
-    if (get_var('SPECTRE_V2_USER')) {
-        loadtest "cpu_bugs/spectre_v2_user";
-    }
-    if (get_var('SPECTRE_V4')) {
-        loadtest "cpu_bugs/spectre_v4";
-    }
-    if (get_var('MDS')) {
-        loadtest "cpu_bugs/mds";
-    }
-    if (get_var('L1TF')) {
-        loadtest "cpu_bugs/l1tf";
-    }
-    if (get_var('MITIGATIONS')) {
-        loadtest "cpu_bugs/mitigations";
-    }
+
+    loadtest "cpu_bugs/meltdown" if get_var('MELTDOWN', 1);
+    loadtest "cpu_bugs/spectre_v2" if get_var('SPECTRE_V2', 1);
+    loadtest "cpu_bugs/spectre_v2_user" if get_var('SPECTRE_V2_USER', 1);
+    loadtest "cpu_bugs/spectre_v4" if get_var('SPECTRE_V4', 1);
+    loadtest "cpu_bugs/mds" if get_var('MDS', 1);
+    loadtest "cpu_bugs/l1tf" if get_var('L1TF', 1);
+    loadtest "cpu_bugs/mitigations" if get_var('MITIGATIONS', 1);
+
     if (get_var('KVM_GUEST_INST')) {
         loadtest "autoyast/prepare_profile";
         loadtest "cpu_bugs/kvm_guest_install";
@@ -2582,18 +2570,12 @@ sub load_mitigation_tests {
     if (get_var('XEN_MITIGATIONS')) {
         loadtest "cpu_bugs/xen_mitigations";
     }
-    if (get_var('SPECTRE_V1')) {
-        loadtest "cpu_bugs/spectre_v1";
-    }
-    if (get_var('TAA')) {
-        loadtest "cpu_bugs/taa";
-    }
-    if (get_var('MDS_TAA')) {
-        loadtest "cpu_bugs/mds_taa";
-    }
-    if (get_var('ITLB')) {
-        loadtest "cpu_bugs/itlb";
-    }
+
+    loadtest "cpu_bugs/spectre_v1" if get_var('SPECTRE_V1', 1);
+    loadtest "cpu_bugs/taa" if get_var('TAA', 1);
+    loadtest "cpu_bugs/mds_taa" if get_var('MDS_TAA', 1);
+    loadtest "cpu_bugs/itlb" if get_var('ITLB', 1);
+
     if (get_var('XEN_PV') or get_var('XEN_HVM')) {
         loadtest "cpu_bugs/xen_domu_mitigation_test";
     }
