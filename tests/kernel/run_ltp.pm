@@ -341,6 +341,7 @@ sub run {
         assert_script_run('unset RHOST');
     }
 
+    script_run('ls /sys/dev/block/*/*/partition');
     script_run('vmstat -w');
 }
 
