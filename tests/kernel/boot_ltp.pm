@@ -59,6 +59,15 @@ sub run {
     schedule_tests($cmd_file) if $cmd_file;
 }
 
+sub post_fail_hook {
+    if (is_ipmi) {
+        select_console('sol');
+        script_run('ip addr');
+        script_output('dmesg');
+        script_output('journalctl --no-pager -b0');
+    }
+}
+
 sub test_flags {
     return {
         fatal => 1,
