@@ -467,7 +467,7 @@ sub run {
     check_kernel_package($kernel_package);
 
     if (!get_var('KGRAFT')) {
-        power_action('reboot', textmode => 1);
+        power_action('reboot', textmode => 1, keepconsole => 1);
         $self->wait_boot if get_var('LTP_BAREMETAL');
     }
 }
