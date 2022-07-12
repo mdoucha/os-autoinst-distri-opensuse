@@ -164,6 +164,7 @@ sub run {
     }
 
     send_key 'ret';
+    sleep 2;
     save_screenshot;
 
     # If the remote repo doesn't exist, the machine will silently boot
