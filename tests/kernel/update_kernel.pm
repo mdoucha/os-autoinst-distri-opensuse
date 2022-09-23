@@ -359,7 +359,7 @@ sub install_kotd {
     remove_kernel_packages;
     zypper_call("rm kernel-rt");
     zypper_ar($repo, name => 'KOTD', priority => 90, no_gpg_check => 1);
-    zypper_call("in -l kernel-rt");
+    zypper_call("in -l -r KOTD kernel-rt");
 }
 
 sub boot_to_console {
