@@ -358,7 +358,7 @@ sub install_kotd {
     fully_patch_system;
     remove_kernel_packages;
     zypper_ar($repo, name => 'KOTD', priority => 90, no_gpg_check => 1);
-    zypper_call("in -l kernel-default kernel-devel");
+    zypper_call("in -l kernel-rt");
 }
 
 sub boot_to_console {
