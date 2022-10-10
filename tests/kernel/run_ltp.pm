@@ -341,6 +341,7 @@ sub run_post_fail {
     select_console('root-console');
     script_run("vmstat -w |tee /dev/$serialdev");
     show_tasks_in_blocked_state;
+    $self->select_serial_terminal;
 
     $self->fail_if_running();
 
