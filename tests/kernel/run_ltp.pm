@@ -338,6 +338,10 @@ sub run {
 sub run_post_fail {
     my ($self, $msg) = @_;
 
+    select_console('root-console');
+    script_run("vmstat -w |tee /dev/$serialdev");
+    show_tasks_in_blocked_state;
+
     $self->fail_if_running();
 
     if ($self->{ltp_tinfo} and $self->{result} eq 'fail') {
