@@ -63,6 +63,92 @@ sub double_check_xen_role {
 #AFTER_UPGRADE indicates whether the whole upgrade process finishes.
 sub login_to_console {
     my ($self, $timeout, $counter) = @_;
+
+    select_console 'sol';
+
+    # If a PXE menu will appear just select the default option (and save us the time)
+    if (check_screen([qw(grub2 grub1 prague-pxe-menu)], 600) and match_has_tag('prague-pxe-menu')) {
+        send_key 'ret';
+    }
+
+    assert_screen([qw(grub2 grub1)], 600);
+
+    if (!get_var('UPGRADE_AFTER_REBOOT')) {
+        set_var('REBOOT_AFTER_UPGRADE', '') if (get_var('REBOOT_AFTER_UPGRADE'));
+        if (is_xen_host) {
+            #send key 'up' to stop grub timer counting down, to be more robust to select xen
+            send_key 'up';
+            save_screenshot;
+
+            for (1 .. 20) {
+                send_key 'down';
+                last if check_screen 'virttest-bootmenu-xen-kernel', 5;
+            }
+        }
+    }
+    else {
+        save_screenshot;
+        #offline upgrade requires upgrading offline during reboot while online doesn't
+        if (get_var('OFFLINE_UPGRADE')) {
+            #boot to upgrade menuentry
+            send_key 'down';
+            send_key 'ret';
+            #wait sshd up
+            die "Can not connect to machine to perform offline upgrade via ssh" unless (check_port_state(get_required_var('SUT_IP'), 22, 10));
+            save_screenshot;
+            #switch to ssh console
+            use_ssh_serial_console;
+            save_screenshot;
+            #start upgrade
+            enter_cmd("DISPLAY= yast.ssh");
+            save_screenshot;
+            #wait upgrade finish
+            assert_screen('rebootnow', 2700);
+            save_screenshot;
+            send_key 'ret';
+            #leave ssh console and switch to sol console
+            switch_from_ssh_to_sol_console(reset_console_flag => 'on');
+            save_screenshot;
+            send_key 'ret';
+            #wait grub2 boot menu after first stage upgrade
+            assert_screen('grub2', 300);
+            #wait sshd up after first stage upgrade
+            die "Can not connect to machine to perform offline upgrade second stage via ssh" unless (check_port_state(get_required_var('SUT_IP'), 22, 20));
+            save_screenshot;
+            #switch to ssh console
+            use_ssh_serial_console;
+            save_screenshot;
+            #start second stage upgrade
+            enter_cmd("DISPLAY= yast.ssh");
+            save_screenshot;
+            #wait for second stage upgrade completion
+            assert_screen('yast2-second-stage-done', 300);
+            #leave ssh console and switch to sol console
+            switch_from_ssh_to_sol_console(reset_console_flag => 'on');
+            save_screenshot;
+            send_key 'ret';
+            save_screenshot;
+        }
+        #setup vars
+        set_var('UPGRADE_AFTER_REBOOT', '');
+        set_var('REBOOT_AFTER_UPGRADE', '1');
+        set_var('AFTER_UPGRADE', '1');
+    }
+    save_screenshot;
+    send_key 'ret';
+
+    assert_screen([qw(linux-login virttest-displaymanager)], 600);
+
+    # Set ssh console timeout for thunderx machine
+    set_ssh_console_timeout_before_use if (is_remote_backend && is_aarch64 && get_var('IPMI_HW') eq 'thunderx');
+    # use console based on ssh to avoid unstable ipmi
+    use_ssh_serial_console;
+    # double-check xen role for xen host
+    double_check_xen_role if (is_xen_host and !get_var('REBOOT_AFTER_UPGRADE'));
+}
+
+sub login_to_console_old {
+    my ($self, $timeout, $counter) = @_;
     $timeout //= 5;
     $counter //= 240;
 
