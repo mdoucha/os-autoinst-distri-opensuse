@@ -331,6 +331,7 @@ sub run {
         die "Timed out waiting for LTP test case which may still be running or the OS may have crashed!";
     }
 
+    script_run('ls /dev/shm');
     script_run('vmstat -w');
 }
 
