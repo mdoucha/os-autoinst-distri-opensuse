@@ -388,6 +388,8 @@ sub run {
         boot_to_console($self);
     }
 
+    script_run('ip addr');
+
     # https://progress.opensuse.org/issues/90522
     if (is_sle('=12-SP2')) {
         my $arch = get_var('ARCH');
@@ -457,10 +459,13 @@ sub run {
 }
 
 sub post_fail_hook {
+    reset_consoles;
     select_console('root-console');
+    script_run('ip addr');
     script_run('dmesg');
     script_run('ls /var/log/ssh');
     select_serial_terminal;
+    script_run('ip addr');
     script_run('dmesg');
 }
 
