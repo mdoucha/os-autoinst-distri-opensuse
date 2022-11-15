@@ -456,6 +456,14 @@ sub run {
     }
 }
 
+sub post_fail_hook {
+    select_console('root-console');
+    script_run('dmesg');
+    script_run('ls /var/log/ssh');
+    select_serial_terminal;
+    script_run('dmesg');
+}
+
 sub test_flags {
     return {fatal => 1};
 }
