@@ -389,6 +389,7 @@ sub run {
     }
 
     script_run('ip addr');
+    script_run('echo update_kernel >/root/msg.txt');
 
     # https://progress.opensuse.org/issues/90522
     if (is_sle('=12-SP2')) {
@@ -461,10 +462,12 @@ sub run {
 sub post_fail_hook {
     reset_consoles;
     select_console('root-console');
+    script_run('cat /root/msg.txt');
     script_run('ip addr');
     script_run('dmesg');
     script_run('ls /var/log/ssh');
     select_serial_terminal;
+    script_run('cat /root/msg.txt');
     script_run('ip addr');
     script_run('dmesg');
 }
