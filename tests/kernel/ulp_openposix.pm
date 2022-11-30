@@ -62,6 +62,7 @@ sub run {
     zypper_call("in --oldpackage glibc-$libver");
     schedule_tests('openposix', "_glibc-$libver");
     loadtest_kernel('ulp_threads', name => "ulp_threads_glibc-$libver");
+    script_run("export LD_PRELOAD=''");
     zypper_call("in $packname");
 
     # Run tests again with the next untested glibc version
