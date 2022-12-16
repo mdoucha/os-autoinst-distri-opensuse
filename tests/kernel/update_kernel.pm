@@ -111,8 +111,8 @@ sub update_kernel {
 
 sub mod_rpm_info {
     my $module = shift;
-    script_output("rpm -qf /$module");
-    script_output("modinfo /$module");
+    script_output("time rpm -qf /$module");
+    script_output("time modinfo /$module");
 }
 
 sub kgraft_state {
@@ -137,7 +137,7 @@ sub kgraft_state {
         }
     }
 
-    script_run("lsinitrd /boot/initrd-$kver-default | grep patch");
+    script_run("time ( lsinitrd /boot/initrd-$kver-default | grep patch )");
     $module = script_output("lsinitrd /boot/initrd-$kver-default | awk '/-patch-.*ko\$/ || /livepatch-.*ko\$/ {print \$NF}'");
 
     if (check_var('REMOVE_KGRAFT', '1')) {
