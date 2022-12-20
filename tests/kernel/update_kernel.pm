@@ -111,8 +111,10 @@ sub update_kernel {
 
 sub mod_rpm_info {
     my $module = shift;
-    script_output("time rpm -qf /$module");
-    script_output("time modinfo /$module");
+    script_output("( time rpm -qf /$module ) 2>&1 |tee /root/timeinfo.txt");
+    script_run("cat /root/timeinfo.txt");
+    script_output("( time modinfo /$module ) 2>&1 |tee /root/timeinfo.txt");
+    script_run("cat /root/timeinfo.txt");
 }
 
 sub kgraft_state {
@@ -137,7 +139,8 @@ sub kgraft_state {
         }
     }
 
-    script_run("time ( lsinitrd /boot/initrd-$kver-default | grep patch )");
+    script_run("( time ( lsinitrd /boot/initrd-$kver-default | grep patch ) ) 2>&1 | tee /root/timeinfo.txt");
+    script_run("cat /root/timeinfo.txt");
     $module = script_output("lsinitrd /boot/initrd-$kver-default | awk '/-patch-.*ko\$/ || /livepatch-.*ko\$/ {print \$NF}'");
 
     if (check_var('REMOVE_KGRAFT', '1')) {
@@ -389,7 +392,6 @@ sub run {
     }
 
     script_run('ip addr');
-    script_run('echo update_kernel >/root/msg.txt');
 
     # https://progress.opensuse.org/issues/90522
     if (is_sle('=12-SP2')) {
@@ -460,14 +462,14 @@ sub run {
 }
 
 sub post_fail_hook {
-    reset_consoles;
     select_console('root-console');
-    script_run('cat /root/msg.txt');
+    script_run("cat /root/timeinfo.txt");
     script_run('ip addr');
     script_run('dmesg');
     script_run('ls /var/log/ssh');
     select_serial_terminal;
-    script_run('cat /root/msg.txt');
+    script_run('ps aux');
+    script_run("cat /root/timeinfo.txt");
     script_run('ip addr');
     script_run('dmesg');
 }
