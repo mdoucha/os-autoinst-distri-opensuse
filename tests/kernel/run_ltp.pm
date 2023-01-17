@@ -17,6 +17,7 @@ use serial_terminal;
 use Mojo::File 'path';
 use Mojo::JSON;
 use LTP::WhiteList;
+use serial_terminal;
 require bmwqemu;
 
 sub start_result {
@@ -338,6 +339,9 @@ sub run {
 sub run_post_fail {
     my ($self, $msg) = @_;
 
+    select_console('root-console');
+    show_tasks_in_blocked_state();
+    select_serial_terminal;
     $self->fail_if_running();
 
     if ($self->{ltp_tinfo} and $self->{result} eq 'fail') {
