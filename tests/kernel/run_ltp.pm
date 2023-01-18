@@ -340,6 +340,8 @@ sub run_post_fail {
     my ($self, $msg) = @_;
 
     select_console('root-console');
+    #script_run('/opt/ltp/testcases/bin/ns_exec $(readlink /var/run/netns/ltp_ns | cut -f3 -d/) net,mnt rpcdebug -m rpc -s all');
+    #script_run('sleep 60', timeout => 90);
     show_tasks_in_blocked_state();
     select_serial_terminal;
     $self->fail_if_running();
