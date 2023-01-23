@@ -342,8 +342,18 @@ sub run_post_fail {
     select_console('root-console');
     #script_run('/opt/ltp/testcases/bin/ns_exec $(readlink /var/run/netns/ltp_ns | cut -f3 -d/) net,mnt rpcdebug -m rpc -s all');
     #script_run('sleep 60', timeout => 90);
-    show_tasks_in_blocked_state();
+    #show_tasks_in_blocked_state();
+
+    script_run('rm -rf /var/crash/*');
+    send_key 'alt-sysrq-s';
+    send_key 'alt-sysrq-c';
+    reset_consoles;
+    $self->wait_boot;
     select_serial_terminal;
+    my $dump = script_output('ls /var/crash |tail -n1');
+    assert_script_run("tar cJf /root/crashdump.tar.xz /var/crash/$dump");
+    upload_logs('/root/crashdump.tar.xz');
+
     $self->fail_if_running();
 
     if ($self->{ltp_tinfo} and $self->{result} eq 'fail') {
