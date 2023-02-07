@@ -333,6 +333,7 @@ sub run {
     }
 
     script_run('vmstat -w');
+    script_run('cat /proc/fs/nfsd/pool_stats');
 }
 
 # Only propogate death don't create it from failure [2]
@@ -340,6 +341,7 @@ sub run_post_fail {
     my ($self, $msg) = @_;
 
     select_console('root-console');
+    script_run('cat /proc/fs/nfsd/pool_stats');
     #script_run('/opt/ltp/testcases/bin/ns_exec $(readlink /var/run/netns/ltp_ns | cut -f3 -d/) net,mnt rpcdebug -m rpc -s all');
     #script_run('sleep 60', timeout => 90);
     #show_tasks_in_blocked_state();
