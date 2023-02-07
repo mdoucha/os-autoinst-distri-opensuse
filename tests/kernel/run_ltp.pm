@@ -340,6 +340,7 @@ sub run_post_fail {
     my ($self, $msg) = @_;
 
     select_console('root-console');
+    script_run('date -Iseconds');
     show_tasks_in_blocked_state();
     select_serial_terminal;
     $self->fail_if_running();
