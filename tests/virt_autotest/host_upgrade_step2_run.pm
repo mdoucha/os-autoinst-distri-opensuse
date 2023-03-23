@@ -22,7 +22,7 @@ sub get_script_run {
     my $pre_test_cmd = $self->get_test_name_prefix;
     $pre_test_cmd .= "-run 02";
 
-    return "rm /var/log/qa/old* /var/log/qa/ctcs2/* -r;" . "$pre_test_cmd";
+    return "rm -rf /var/log/qa/old* /var/log/qa/ctcs2/*;" . "$pre_test_cmd";
 }
 
 sub post_execute_script_configuration {

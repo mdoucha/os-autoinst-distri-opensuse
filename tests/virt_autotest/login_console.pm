@@ -15,6 +15,7 @@ use testapi;
 use Utils::Architectures;
 use Utils::Backends qw(use_ssh_serial_console is_remote_backend set_ssh_console_timeout);
 use ipmi_backend_utils;
+use serial_terminal;
 use virt_autotest::utils qw(is_xen_host check_port_state check_host_health);
 use IPC::Run;
 
@@ -40,13 +41,11 @@ sub double_check_xen_role {
     else {
         record_info 'INFO', 'Check Xen hypervisor as Grub2 menuentry';
         die 'Check Xen hypervisor as Grub2 menuentry failed' if (script_run('grub2-once --list | grep Xen') != 0);
-        save_screenshot;
         die 'Double-check xen kernel failed';
     }
 
     record_info 'INFO', 'Check if start bootloader from a read-only snapshot';
     assert_script_run('touch /root/read-only.fs && rm -rf /root/read-only.fs');
-    save_screenshot;
 }
 
 #Explanation for parameters introduced to facilitate offline host upgrade:
@@ -66,15 +65,13 @@ sub login_to_console {
     $timeout //= 5;
     $counter //= 240;
 
+    reset_consoles;
+
     if (is_s390x) {
-        #Switch to s390x lpar console
-        reset_consoles;
-        my $svirt = select_console('svirt', await_console => 0);
+        select_serial_terminal;
         return;
     }
 
-    reset_consoles;
-    reset_consoles;
     if (is_remote_backend && is_aarch64 && get_var('IPMI_HW') eq 'thunderx') {
         select_console 'sol', await_console => 1;
         send_key 'ret';
@@ -95,7 +92,7 @@ sub login_to_console {
             send_key_until_needlematch(['linux-login', 'virttest-displaymanager'], 'ret', $counter, $timeout);
             #use console based on ssh to avoid unstable ipmi
             save_screenshot;
-            use_ssh_serial_console;
+            select_serial_terminal;
             return;
         }
     }
@@ -194,7 +191,7 @@ sub login_to_console {
     # Set ssh console timeout for thunderx machine
     set_ssh_console_timeout_before_use if (is_remote_backend && is_aarch64 && get_var('IPMI_HW') eq 'thunderx');
     # use console based on ssh to avoid unstable ipmi
-    use_ssh_serial_console;
+    select_serial_terminal;
     # double-check xen role for xen host
     double_check_xen_role if (is_xen_host and !get_var('REBOOT_AFTER_UPGRADE'));
 }

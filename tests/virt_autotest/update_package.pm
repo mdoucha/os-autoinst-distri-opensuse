@@ -20,13 +20,13 @@ use virt_autotest::utils qw(is_xen_host is_kvm_host);
 sub update_package {
     my $self = shift;
     my $test_type = get_var('TEST_TYPE', 'Milestone');
-    my $update_pkg_cmd = "source /usr/share/qa/virtautolib/lib/virtlib;update_virt_rpms";
+    my $update_pkg_cmd = "BASH_ENV=/usr/share/qa/virtautolib/lib/virtlib bash -c 'update_virt_rpms";
     my $ret;
     if ($test_type eq 'Milestone') {
-        $update_pkg_cmd = $update_pkg_cmd . " off on off";
+        $update_pkg_cmd = $update_pkg_cmd . " off on off'";
     }
     else {
-        $update_pkg_cmd = $update_pkg_cmd . " off off on";
+        $update_pkg_cmd = $update_pkg_cmd . " off off on'";
     }
 
     $update_pkg_cmd = $update_pkg_cmd . " 2>&1 | tee /tmp/update_virt_rpms.log ";
@@ -37,7 +37,6 @@ sub update_package {
     else {
         $self->execute_script_run($update_pkg_cmd, 7200);
         upload_logs("/tmp/update_virt_rpms.log");
-        save_screenshot;
         if ($self->{script_output} !~ /Need to reboot system to make the rpms work/m) {
             die " Update virt rpms fail, going to terminate following test!";
         }
@@ -71,7 +70,6 @@ sub run {
         script_run "sed -i 's/#dnssec-validation auto;/dnssec-validation no;/g' /etc/named.conf", %args;
         script_run "grep 'dnssec-validation' /etc/named.conf", %args;
         script_run "systemctl restart named", %args;
-        save_screenshot;
     }
 
 }

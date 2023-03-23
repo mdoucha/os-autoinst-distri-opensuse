@@ -66,7 +66,6 @@ sub post_fail_hook {
         else {
             #host online upgrade
             $self->upload_coredumps;
-            save_screenshot;
 
             virt_utils::collect_host_and_guest_logs;
         }

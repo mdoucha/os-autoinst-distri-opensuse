@@ -42,7 +42,6 @@ sub enable_debug_logging {
         script_run "sed -i '/^[# ]*log_filters *=/{h;s%^[# ]*log_filters *=.*[0-9].*\$%log_filters=\"1:qemu 1:libvirt 4:object 4:json 4:event 3:util 1:util.pci\"%};\${x;/^\$/{s%%log_filters=\"1:qemu 1:libvirt 4:object 4:json 4:event 3:util 1:util.pci\"%;H};x}' $libvirtd_conf_file";
         script_run "grep -e log_level -e log_outputs -e log_filters $libvirtd_conf_file";
     }
-    save_screenshot;
 
     # enable journal log with previous reboot
     my $journald_conf_file = "/etc/systemd/journald.conf";
@@ -51,7 +50,6 @@ sub enable_debug_logging {
         script_run "grep Storage $journald_conf_file";
         script_run 'systemctl restart systemd-journald';
     }
-    save_screenshot;
 
     # enable qemu core dumps
     my $qemu_conf_file = "/etc/libvirt/qemu.conf";
@@ -59,7 +57,6 @@ sub enable_debug_logging {
         script_run "sed -i '/max_core *=/{h;s/^[# ]*max_core *=.*\$/max_core = \"unlimited\"/};\${x;/^\$/{s//max_core = \"unlimited\"/;H};x}' $qemu_conf_file";
         script_run "grep max_core $qemu_conf_file";
     }
-    save_screenshot;
 
     #restart libvirtd to make debug level and coredump take effect
     virt_autotest::utils::restart_libvirtd;
@@ -126,7 +123,6 @@ sub repl_repo_in_sourcefile {
     else {
         print "Do not need to change resource for $veritem item\n";
     }
-    save_screenshot;
 }
 
 # Replace module repos configured in sources.* with openqa daily build repos
@@ -160,9 +156,7 @@ sub repl_module_in_sourcefile {
     }
     else {
         assert_script_run($command, timeout => 120);
-        save_screenshot;
         assert_script_run("grep Module $source_file -r");
-        save_screenshot;
         upload_logs "/usr/share/qa/virtautolib/data/sources.de";
     }
 }
@@ -181,9 +175,7 @@ sub repl_addon_with_daily_build_module_in_files {
       . get_required_var('BUILD')
       . "-Media1/</media_url>#' \$file;done";
     assert_script_run($command);
-    save_screenshot;
     assert_script_run("grep media_url $file_list -r");
-    save_screenshot;
 }
 
 sub repl_guest_autoyast_addon_with_daily_build_module {
@@ -352,7 +344,6 @@ sub compress_single_qcow2_disk {
             $cmd = "nice ionice qemu-img convert --force-share -c -p -O qcow2 $orig_disk $compressed_disk";
             die("Disk compression failed from $orig_disk to $compressed_disk.") if (script_run($cmd, 360) ne 0);
         }
-        save_screenshot;
         record_info('Disk compression', "Disk compression done from $orig_disk to $compressed_disk.");
     }
 }
@@ -441,7 +432,6 @@ sub download_guest_assets {
             next;
         }
         script_run("ls -l $vm_xml_dir", 10);
-        save_screenshot;
 
         # download vm disk files
         my $local_guest_image = script_output "grep '<source file=' $vm_xml_dir/$guest.xml | sed \"s/^\\s*<source file='\\([^']*\\)'.*\$/\\1/\"";
@@ -652,22 +642,16 @@ sub collect_host_and_guest_logs {
 
     my $logs_collector_script_url = data_url("virt_autotest/virt_logs_collector.sh");
     script_output("curl -s -o ~/virt_logs_collector.sh $logs_collector_script_url", 180, type_command => 0, proceed_on_failure => 0);
-    save_screenshot;
     script_output("chmod +x ~/virt_logs_collector.sh && ~/virt_logs_collector.sh -l \"$host_extra_logs\" -g \"$guest_wanted\" -e \"$guest_extra_logs\"", 3600 / get_var('TIMEOUT_SCALE', 1), type_command => 1, proceed_on_failure => 1);
-    save_screenshot;
 
     my $logs_fetching_script_url = data_url("virt_autotest/fetch_logs_from_guest.sh");
     script_output("curl -s -o ~/fetch_logs_from_guest.sh $logs_fetching_script_url", 180, type_command => 0, proceed_on_failure => 0);
-    save_screenshot;
     script_output("chmod +x ~/fetch_logs_from_guest.sh && ~/fetch_logs_from_guest.sh -g \"$guest_wanted\" -e \"$guest_extra_logs\"", 1800, type_command => 1, proceed_on_failure => 1);
-    save_screenshot;
 
     upload_logs("/tmp/virt_logs_all.tar.gz");
     upload_logs("/var/log/virt_logs_collector.log");
     upload_logs("/var/log/fetch_logs_from_guest.log");
-    save_screenshot;
     script_run("rm -f -r /tmp/virt_logs_all.tar.gz /var/log/virt_logs_collector.log /var/log/fetch_logs_from_guest.log");
-    save_screenshot;
 }
 
 #The script clean_up_virt_logs.sh records its output in /var/log/clean_up_virt_logs.log, you can choose to upload it when necessary
@@ -687,9 +671,7 @@ sub cleanup_host_and_guest_logs {
     }
     my $logs_cleanup_script_url = data_url("virt_autotest/clean_up_virt_logs.sh");
     script_output("curl -s -o ~/clean_up_virt_logs.sh $logs_cleanup_script_url", 180, type_command => 0, proceed_on_failure => 0);
-    save_screenshot;
     script_output("chmod +x ~/clean_up_virt_logs.sh && ~/clean_up_virt_logs.sh -l \"$extra_logs_to_cleanup\"", 1800, type_command => 1, proceed_on_failure => 1);
-    save_screenshot;
 }
 
 #The script guest_console_monitor.sh records its output in /var/log/guest_console_monitor.log, you can choose to upload it when necessary
@@ -712,21 +694,17 @@ sub monitor_guest_console {
 
     my $guest_console_script_url = data_url("virt_autotest/guest_console_monitor.sh");
     script_output("curl -s -o ~/guest_console_monitor.sh $guest_console_script_url", 180, type_command => 0, proceed_on_failure => 0);
-    save_screenshot;
     script_output("chmod +x ~/guest_console_monitor.sh && ~/guest_console_monitor.sh $monitor_option", 1800, type_command => 1, proceed_on_failure => 1);
-    save_screenshot;
 }
 
 #Start monitoring guest console
 sub start_monitor_guest_console {
     monitor_guest_console('start');
-    save_screenshot;
 }
 
 #Stop monitor guest console
 sub stop_monitor_guest_console {
     monitor_guest_console('stop');
-    save_screenshot;
 }
 
 #Detect whether running sles is the developing version

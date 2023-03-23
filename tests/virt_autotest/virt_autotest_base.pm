@@ -126,7 +126,6 @@ sub post_execute_script_run {
     if ($self->{upload_virt_log_flag} eq "yes") {
         upload_virt_logs($self->{log_dir}, $self->{compressed_log_name});
     }
-    save_screenshot;
 
     my $output = $self->{script_output};
     if ($self->{assert_pattern}) {
@@ -139,7 +138,6 @@ sub post_execute_script_run {
         diag("Going to do assertion after test. Call post_execute_script_assertion because assert pattern is not available.");
         $self->post_execute_script_assertion;
     }
-    save_screenshot;
 }
 
 #Adding junit log and uploading guest assets are wrapped up here in newly introduced subroutine post_run_test.
@@ -159,22 +157,15 @@ sub post_run_test {
 
 sub execute_script_run {
     my ($self, $cmd, $timeout) = @_;
-    my $pattern = "CMD_FINISHED-" . int(rand(999999));
+
     if (!$timeout) {
         $timeout = 10;
     }
 
-    enter_cmd "(" . $cmd . "; echo $pattern) 2>&1 | tee -a /dev/$serialdev";
-    $self->{script_output} = wait_serial($pattern, $timeout);
-    save_screenshot;
+    $self->{script_output} = script_output($cmd, $timeout);
 
     if (!$self->{script_output} or !defined $self->{script_output}) {
-        save_screenshot;
         die "Timeout due to cmd run :[" . $cmd . "]\n";
-    }
-    else {
-        save_screenshot;
-        $self->{script_output} =~ s/[\r\n]+$pattern[\r\n]+//g;
     }
 }
 
@@ -182,7 +173,6 @@ sub push_junit_log {
     my ($self, $junit_content) = @_;
 
     script_run "echo \'$junit_content\' > /tmp/output.xml";
-    save_screenshot;
     parse_junit_log("/tmp/output.xml");
 }
 
@@ -208,7 +198,6 @@ sub run_test {
     $self->execute_script_run($test_cmd, $timeout);
     $self->post_execute_script_run;
     $self->post_run_test;
-    save_screenshot;
 }
 
 sub add_junit_log {
@@ -270,7 +259,6 @@ sub post_fail_hook {
     }
 
     $self->post_run_test;
-    save_screenshot;
 
     check_host_health;
 
@@ -286,10 +274,8 @@ sub post_fail_hook {
     else {
         virt_utils::collect_host_and_guest_logs;
     }
-    save_screenshot;
 
     $self->upload_coredumps;
-    save_screenshot;
 }
 1;
 
