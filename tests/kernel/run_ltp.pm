@@ -297,6 +297,11 @@ sub run {
     my $test = $tinfo->test;
     my %env = %{$test_result_export->{environment}};
 
+    script_run('prlimit -u');
+    script_run('cat /proc/sys/kernel/threads-max');
+    script_run('cat /proc/sys/kernel/pid_max');
+    script_run('ls -d /proc/[0-9]*/task/* |wc -l');
+
     $env{retval} = 'undefined';
     $self->{ltp_env} = \%env;
     $self->{ltp_tinfo} = $tinfo;
