@@ -40,6 +40,7 @@ sub run {
         $self->wait_boot(ready_time => 1800);
     }
 
+    select_console('root-console');
     select_serial_terminal;
 
     # Debug code for poo#81142
