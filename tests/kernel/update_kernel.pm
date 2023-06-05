@@ -261,7 +261,7 @@ sub prepare_kgraft {
         zypper_call("ar $val $cur_repo");
         my $pkgs = zypper_search("-s -t package -r $cur_repo");
         #disable kgraf-test-repo for while
-        zypper_call("mr -d $cur_repo");
+        #zypper_call("mr -d $cur_repo");
 
         foreach my $pkg (@$pkgs) {
             my $cur_klp_pkg = is_klp_pkg($pkg);
