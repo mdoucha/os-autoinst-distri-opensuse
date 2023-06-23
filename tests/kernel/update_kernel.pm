@@ -369,10 +369,11 @@ sub update_kgraft {
 
 sub install_kotd {
     my $repo = shift;
+    my $pkg = shift;
     fully_patch_system;
     remove_kernel_packages;
     zypper_ar($repo, name => 'KOTD', priority => 90, no_gpg_check => 1);
-    zypper_call("in -l kernel-default kernel-devel");
+    zypper_call("in -l $pkg kernel-devel");
 }
 
 sub boot_to_console {
@@ -442,11 +443,10 @@ sub run {
     }
     elsif (get_var('KERNEL_BASE')) {
         $kernel_package = 'kernel-default-base';
-        $self->prepare_kernel_base;
-        update_kernel($repo, $incident_id);
+        install_kotd($repo, $kernel_package);
     }
     elsif (get_var('KOTD_REPO')) {
-        install_kotd($repo);
+        install_kotd($repo, $kernel_package);
     }
     else {
         update_kernel($repo, $incident_id);
