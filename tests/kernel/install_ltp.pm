@@ -372,6 +372,9 @@ sub run {
     enable_tpm_slb9670 if (get_var('MACHINE') =~ /RPi/);
 
     select_serial_terminal;
+    script_run('echo Y >/sys/module/printk/parameters/ignore_loglevel');
+    script_run('cat /sys/kernel/security/lockdown');
+    script_run(q{hexdump -n5 -e '8/1 "%02x " "\n"' /sys/firmware/efi/efivars/SecureBoot-8be4df61-93ca-11d2-aa0d-00e098032b8c});
 
     if (script_output('cat /sys/module/printk/parameters/time') eq 'N') {
         script_run('echo 1 > /sys/module/printk/parameters/time');
