@@ -232,13 +232,12 @@
           <interface>eth0</interface>
         </interfaces>
         <services config:type="list">
-          % if ($check_var->('ARCH', 's390x')) {
           <service>vnc-server</service>
-          % }
           <service>ssh</service>
         </services>
         <ports config:type="list">
           <port>22/tcp</port>
+          <port>5901/tcp</port>
         </ports>
       </zone>
     </zones>
