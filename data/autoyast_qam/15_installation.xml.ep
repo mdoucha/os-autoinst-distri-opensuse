@@ -232,8 +232,9 @@
           <interface>eth0</interface>
         </interfaces>
         <services config:type="list">
-          <service>vnc-server</service>
           <service>ssh</service>
+          <service>tigervnc</service>
+          <service>tigervnc-https</service>
         </services>
         <ports config:type="list">
           <port>22/tcp</port>
@@ -292,6 +293,9 @@
       <pattern><%= $pattern %></pattern>
       % }
     </patterns>
+    <packages t="list">
+      <package>xorg-x11-Xvnc</package>
+    </packages>
   </software>
   <services-manager>
     % if ($check_var->('DESKTOP', 'gnome')) {
