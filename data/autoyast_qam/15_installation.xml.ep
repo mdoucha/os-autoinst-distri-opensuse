@@ -365,6 +365,8 @@
 cd /etc/zypp/repos.d
 sed -i 's/enabled=1/enabled=0/' $(ls|grep -i nvidia)
 zypper lr
+# xvnc socket cannot be enabled via <on_demand> list, enable manually
+systemctl enable xvnc.socket
 exit 0
 
 ]]></source>
