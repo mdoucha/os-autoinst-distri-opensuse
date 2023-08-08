@@ -235,6 +235,7 @@
           <service>ssh</service>
           <service>tigervnc</service>
           <service>tigervnc-https</service>
+          <service>vnc-server</service>
         </services>
         <ports config:type="list">
           <port>22/tcp</port>
