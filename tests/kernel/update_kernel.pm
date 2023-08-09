@@ -395,7 +395,7 @@ sub run {
         boot_to_console($self);
     }
 
-    add_extra_customer_repositories;
+    #add_extra_customer_repositories;
 
     my $repo = get_var('KOTD_REPO');
     my $incident_id = undef;
