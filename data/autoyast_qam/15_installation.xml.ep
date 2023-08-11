@@ -296,6 +296,7 @@
     </patterns>
     <packages t="list">
       <package>xorg-x11-Xvnc</package>
+      <package>dhcp-client</package>
     </packages>
   </software>
   <services-manager>
