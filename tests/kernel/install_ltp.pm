@@ -151,8 +151,6 @@ sub install_build_dependencies {
       flex
       gcc
       git-core
-      libaio-devel
-      libopenssl-devel
       make
     );
 
@@ -166,19 +164,12 @@ sub install_build_dependencies {
     zypper_call('-t in ' . join(' ', @deps));
 
     my @maybe_deps = qw(
-      keyutils-devel
-      libcap-devel
-      libacl-devel
-      libtirpc-devel
-      libselinux-devel
       gcc-32bit
       kernel-default-devel-32bit
       keyutils-devel-32bit
       libacl-devel-32bit
       libaio-devel-32bit
       libcap-devel-32bit
-      libmnl-devel
-      libnuma-devel
       libnuma-devel-32bit
       libselinux-devel-32bit
       libtirpc-devel-32bit
