@@ -41,6 +41,7 @@ sub run {
     }
 
     select_serial_terminal;
+    die 'Test post_fail_hook';
 
     # Debug code for poo#81142
     script_run('gzip -9 </dev/fb0 >framebuffer.dat.gz');
