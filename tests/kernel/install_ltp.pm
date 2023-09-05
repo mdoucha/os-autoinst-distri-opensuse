@@ -365,6 +365,8 @@ sub run {
     enable_tpm_slb9670 if (get_var('MACHINE') =~ /RPi/);
 
     select_serial_terminal;
+    assert_script_run('echo 1 >/sys/module/printk/parameters/ignore_loglevel')
+      unless is_sle('<12');
 
     if (script_output('cat /sys/module/printk/parameters/time') eq 'N') {
         script_run('echo 1 > /sys/module/printk/parameters/time');
