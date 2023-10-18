@@ -14,7 +14,7 @@ use base 'opensusebasetest';
 use testapi;
 use serial_terminal 'select_serial_terminal';
 use utils;
-use version_utils qw(is_sle package_version_cmp);
+use version_utils qw(is_sle is_transactional package_version_cmp);
 use qam;
 use kernel 'remove_kernel_packages';
 use klp;
@@ -388,7 +388,7 @@ sub boot_to_console {
 sub run {
     my $self = shift;
 
-    if (is_ipmi && get_var('LTP_BAREMETAL')) {
+    if ((is_ipmi && get_var('LTP_BAREMETAL')) || is_transactional) {
         # System is already booted after installation, just switch terminal
         select_serial_terminal;
     } else {
