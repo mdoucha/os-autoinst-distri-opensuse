@@ -244,6 +244,7 @@ sub trup_call {
 
     die "transactional-update didn't finish" unless defined($ret);
     die "transactional-update returned with $ret, expected $args{exit_code}" unless $ret == $args{exit_code};
+    return $ret;
 }
 
 # Install a pkg in MicroOS

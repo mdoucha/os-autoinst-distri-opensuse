@@ -782,7 +782,7 @@ sub fully_patch_system {
     # poo#115454
     my $zypp_opt = check_var('VIRSH_VMM_FAMILY', 'hyperv') ? '-q' : '';
     if (is_transactional) {
-        transactional::trup_call("-c patch");
+        $ret = transactional::trup_call("-c patch");
     } else {
         for (1 .. 3) {
             $ret = zypper_call("$zypp_opt patch --with-interactive -l", exitcode => [0, 4, 102, 103], timeout => 6000);
