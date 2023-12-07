@@ -405,6 +405,7 @@ sub run {
         boot_to_console($self);
     }
 
+    script_run('ls -1 /boot/vmlinu[xz]*');
     add_extra_customer_repositories;
 
     my $repo = get_var('KOTD_REPO');
