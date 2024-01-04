@@ -2473,6 +2473,8 @@ sub get_secureboot_status {
     my $sbvar = '8be4df61-93ca-11d2-aa0d-00e098032b8c-SecureBoot';
     my $ret;
 
+    zypper_call('in efivar');
+
     if (is_sle('<12-SP3')) {
         $ret = script_output("efivar -pn $sbvar");
 
