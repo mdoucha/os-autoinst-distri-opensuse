@@ -41,6 +41,7 @@ sub run {
     }
 
     select_serial_terminal;
+    script_run('systemctl --no-pager status ntpd');
 
     export_ltp_env;
 
