@@ -306,6 +306,8 @@ sub run {
     my $klog_stamp = "echo 'OpenQA::run_ltp.pm: Starting $test->{name}' > /dev/$serialdev";
     my $start_time = thetime();
 
+    script_run('grep "^cpu" /proc/stat');
+
     if (is_serial_terminal) {
         script_run($klog_stamp);
         wait_serial(serial_term_prompt(), undef, 0, no_regex => 1);
@@ -331,6 +333,7 @@ sub run {
         die "Timed out waiting for LTP test case which may still be running or the OS may have crashed!";
     }
 
+    script_run('grep "^cpu" /proc/stat');
     script_run('vmstat -w');
 }
 
