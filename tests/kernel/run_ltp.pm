@@ -332,6 +332,8 @@ sub run {
         die "Timed out waiting for LTP test case which may still be running or the OS may have crashed!";
     }
 
+    script_run('cat /sys/kernel/tracing/trace >/root/kprobe_trace.log');
+    upload_logs('/root/kprobe_trace.log');
     script_run('vmstat -w');
     script_run('cat /proc/fs/nfsd/pool_stats');
 }

@@ -65,6 +65,11 @@ sub run {
     prepare_ltp_env;
     init_ltp_tests($cmd_file);
 
+    script_run("echo 'p __mnt_want_write vfsmount=%gpr3' >> /sys/kernel/tracing/kprobe_events");
+    script_run("echo 'p __mnt_drop_write vfsmount=%gpr3' >> /sys/kernel/tracing/kprobe_events");
+    script_run("echo 1 > /sys/kernel/tracing/options/stacktrace");
+    script_run("echo 1 > /sys/kernel/tracing/events/kprobes/enable");
+
     # If the command file (runtest file) is set then we dynamically schedule
     # the test and shutdown modules.
     schedule_tests($cmd_file) if $cmd_file;
