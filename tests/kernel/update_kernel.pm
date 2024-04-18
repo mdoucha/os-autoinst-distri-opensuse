@@ -413,7 +413,10 @@ sub run {
         reboot_on_changes;
     }
 
+    my $sle_version = get_var('VERSION');
+    my $arch = get_var('ARCH');
     add_extra_customer_repositories;
+    zypper_ar("http://download.suse.de/ibs/SUSE:/Maintenance:/33401/SUSE_Updates_SLE-Product-SLES_$sle_version-LTSS_$arch/", name => 'zypper_fix');
 
     my $repo = get_var('KOTD_REPO');
     my $incident_id = undef;
