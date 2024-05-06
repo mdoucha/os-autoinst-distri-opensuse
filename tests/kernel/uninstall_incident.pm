@@ -21,7 +21,9 @@ sub run {
         zypper_call("mr -d $uri");
     }
 
+    script_run('klp patches');
     zypper_call('--no-refresh dup --allow-downgrade');
+    script_run('klp patches');
 
     for my $uri (split(",", $repo)) {
         zypper_call("mr -e $uri");
