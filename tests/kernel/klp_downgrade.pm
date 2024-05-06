@@ -18,7 +18,7 @@ sub run {
 
     assert_script_run('klp -n downgrade');
     die 'Kernel reports the same livepatches as before downgrade'
-      if $patches eq script_output('klp patches');
+      if script_output('klp patches') =~ m/\Q$patches\E/s;
 }
 
 sub test_flags {
