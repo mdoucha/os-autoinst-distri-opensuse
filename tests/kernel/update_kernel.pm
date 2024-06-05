@@ -84,6 +84,7 @@ sub prepare_kernel_base {
 sub update_kernel {
     my ($repo, $incident_id) = @_;
 
+    zypper_ar(get_required_var('REPO_LTSS_EXTRA'), name => 'SLES-LTSS-Extra');
     fully_patch_system;
 
     if (check_var('SLE_PRODUCT', 'slert')) {
