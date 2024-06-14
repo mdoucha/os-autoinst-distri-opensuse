@@ -64,7 +64,10 @@ sub _download_whitelist {
 sub find_whitelist_entry {
     my ($self, $env, $suite, $test) = @_;
 
+    bmwqemu::log_call(suite => $suite, test => $test);
+
     $suite = $self->{whitelist}->{$suite};
+    bmwqemu::diag("No suite $suite") unless ($suite);
     return undef unless ($suite);
 
     my @issues;
@@ -73,6 +76,7 @@ sub find_whitelist_entry {
     }
     else {
         $test =~ s/_postun$//g if check_var('KGRAFT', 1) && (check_var('UNINSTALL_INCIDENT', 1) || check_var('KGRAFT_DOWNGRADE', 1));
+        bmwqemu::diag("No entry for $suite / $test") unless exists $suite->{$test};
         return undef unless exists $suite->{$test};
         @issues = @{$suite->{$test}};
     }
@@ -88,8 +92,6 @@ sub override_known_failures {
     my ($self, $testmod, $env, $suite, $testname) = @_;
     my $entry;
 
-    bmwqemu::log_call(suite => $suite, testname => $testname);
-
     if ($env->{retval} && ref($env->{retval}) eq 'ARRAY') {
         my %local_env = %$env;
 
@@ -98,7 +100,6 @@ sub override_known_failures {
         @retvals = (0) unless (@retvals);
 
         for my $retval (@retvals) {
-            bmwqemu::diag("Search whitelist for retval $retval");
             my $tmp = $self->find_whitelist_entry({%$env, retval => $retval}, $suite, $testname);
             return 0 unless ($tmp);
             $entry //= $tmp;
@@ -107,7 +108,6 @@ sub override_known_failures {
         $entry = $self->find_whitelist_entry($env, $suite, $testname);
     }
 
-    bmwqemu::diag("Whitelist entry: " . (defined($entry) ? 'found' : 'not found'));
     return 0 unless defined($entry);
 
     if (exists $entry->{bugzilla}) {
@@ -189,6 +189,7 @@ sub _whitelist_entry_match
     foreach my $attr (@attributes) {
         next unless defined $entry->{$attr};
         return undef unless defined $env->{$attr};
+        bmwqemu::diag("$attr does not match: $env->{$attr} !~ $entry->{$attr}") if ($env->{$attr} !~ m/$entry->{$attr}/);
         return undef if ($env->{$attr} !~ m/$entry->{$attr}/);
     }
     return $entry;
