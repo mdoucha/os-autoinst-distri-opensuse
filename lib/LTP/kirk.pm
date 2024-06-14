@@ -93,7 +93,7 @@ sub _kirk_upload_logs
         my $json_data = Mojo::JSON::decode_json($log_file->slurp());
         my $parser = OpenQA::Parser::Format::LTP->new()->load($log_file->to_string);
         my %results = map { $_->{test_fqn} => $_->{test} } @{$json_data->{results}};
-        my $whitelist = LTP::WhiteList->new();
+        my $whitelist = LTP::WhiteList->new(get_var('KSELFTESTS_KNOWN_ISSUES', ''));
         my $env = prepare_whitelist_environment();
         $env->{kernel} = script_output('uname -r');
 
