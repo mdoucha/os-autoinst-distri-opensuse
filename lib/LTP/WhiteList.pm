@@ -88,6 +88,8 @@ sub override_known_failures {
     my ($self, $testmod, $env, $suite, $testname) = @_;
     my $entry;
 
+    bmwqemu::log_call(suite => $suite, testname => $testname);
+
     if ($env->{retval} && ref($env->{retval}) eq 'ARRAY') {
         my %local_env = %$env;
 
@@ -96,6 +98,7 @@ sub override_known_failures {
         @retvals = (0) unless (@retvals);
 
         for my $retval (@retvals) {
+            bmwqemu::diag("Search whitelist for retval $retval");
             my $tmp = $self->find_whitelist_entry({%$env, retval => $retval}, $suite, $testname);
             return 0 unless ($tmp);
             $entry //= $tmp;
@@ -104,6 +107,7 @@ sub override_known_failures {
         $entry = $self->find_whitelist_entry($env, $suite, $testname);
     }
 
+    bmwqemu::diag("Whitelist entry: " . (defined($entry) ? 'found' : 'not found'));
     return 0 unless defined($entry);
 
     if (exists $entry->{bugzilla}) {
