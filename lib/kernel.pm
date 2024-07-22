@@ -30,9 +30,6 @@ sub remove_kernel_packages {
     if (check_var('SLE_PRODUCT', 'slert')) {
         @packages = qw(kernel-rt kernel-rt-devel kernel-source-rt);
     }
-    elsif (get_kernel_flavor eq 'kernel-64kb') {
-        @packages = qw(kernel-64kb*);
-    }
     else {
         @packages = qw(kernel-default kernel-default-devel kernel-macros kernel-source);
     }
@@ -42,6 +39,7 @@ sub remove_kernel_packages {
         push @packages, qw(kernel-xen kernel-xen-devel);
     }
 
+    push @packages, 'kernel-64kb*' if get_kernel_flavor eq 'kernel-64kb';
     push @packages, "multipath-tools"
       if is_sle('>=15-SP3') and !get_var('KGRAFT');
     zypper_call('-n rm ' . join(' ', @packages), exitcode => [0, 104]);
