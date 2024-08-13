@@ -29,6 +29,7 @@ use bootloader_setup 'add_grub_xen_replace_cmdline_settings';
 use virt_autotest::utils 'is_xen_host';
 use Utils::Backends 'get_serial_console';
 use kdump_utils;
+use package_utils;
 
 sub add_we_repo_if_available {
     # opensuse doesn't have extensions
@@ -60,7 +61,7 @@ sub install_runtime_dependencies {
       sysstat
       iputils
     );
-    zypper_call('-t in ' . join(' ', @deps));
+    install_pacakge(join(' ', @deps), trup_continue => 1);
 
     # kernel-default-extra are only for SLE (in WE)
     # net-tools-deprecated are not available for SLE15
@@ -132,7 +133,7 @@ sub install_runtime_dependencies_network {
       tcpdump
       vsftpd
     );
-    zypper_call('-t in ' . join(' ', @deps));
+    install_package(join(' ', @deps), trup_continue => 1);
 
     my @maybe_deps = qw(
       telnet-server
@@ -163,7 +164,7 @@ sub install_build_dependencies {
         push @deps, 'kernel-default-devel';
     }
 
-    zypper_call('-t in ' . join(' ', @deps));
+    install_package(join(' ', @deps));
 
     my @maybe_deps = qw(
       keyutils-devel
@@ -359,7 +360,8 @@ sub run {
 
     log_versions 1;
 
-    zypper_call('in efivar') if is_sle('12+') || is_opensuse;
+    install_package('efivar', trup_continue => 1)
+      if is_sle('12+') || is_opensuse;
 
     $grub_param .= ' console=hvc0' if (get_var('ARCH') eq 'ppc64le');
     $grub_param .= ' console=ttysclp0' if (get_var('ARCH') eq 's390x');

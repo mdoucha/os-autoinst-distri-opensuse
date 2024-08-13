@@ -1013,7 +1013,8 @@ sub zypper_install_available {
     my $packlist = join(' ', @_);
     my $result = zypper_search("-t package --match-exact $packlist");
 
-    return zypper_call('-t in ' . join(' ', map { $_->{name} } @$result));
+    return package_utils::install_package(join(' ', map {$_->{name}} @$result),
+        trup_continue => 1);
 }
 
 =head2 set_zypper_lock_timeout
