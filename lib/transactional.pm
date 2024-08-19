@@ -320,7 +320,7 @@ sub enter_trup_shell {
 
     $args{global_options} //= '';
     $args{shell_options} //= '';
-    enter_cmd("transactional-update $args{global_options} shell $args{shell_options}; echo trup_shell-status-\$? > /dev/$serialdev");
+    enter_cmd("transactional-update $args{global_options} shell $args{shell_options} >/dev/$serialdev; echo trup_shell-status-\$? > /dev/$serialdev");
     wait_still_screen;
     assert_script_run("uname -a");
 }
