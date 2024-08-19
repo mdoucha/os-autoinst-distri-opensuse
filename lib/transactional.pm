@@ -243,7 +243,7 @@ sub trup_call {
         $ret = script_finish_io(timeout => $args{timeout});
     }
     else {
-        $ret = script_run($script, timeout => $args{timeout}, die_on_timeout => 0);
+        $ret = script_run($script, timeout => $args{timeout});
     }
 
     if ($args{proceed_on_failure}) {
@@ -321,8 +321,7 @@ sub enter_trup_shell {
 
     $args{global_options} //= '';
     $args{shell_options} //= '';
-
-    script_start_io("transactional-update $args{global_options} shell $args{shell_options}");
+    enter_cmd("transactional-update $args{global_options} shell $args{shell_options}; echo trup_shell-status-\$? > /dev/$serialdev");
     wait_still_screen unless is_serial_terminal;
     assert_script_run("uname -a");
 }
@@ -336,11 +335,8 @@ Quit transactional update shell without rebooting.
 =cut
 
 sub exit_trup_shell {
-    my %args = @_;
-
-    $args{exitcodes} //= [0];
     enter_cmd("exit");
-    script_finish_io(%args);
+    wait_serial('trup_shell-status-0') || croak("transactional-update shell did not finish");
     wait_still_screen unless is_serial_terminal;
 }
 
@@ -354,7 +350,7 @@ reboot to take effect. This subroutine should be used together with enter_trup_s
 =cut
 
 sub exit_trup_shell_and_reboot {
-    exit_trup_shell(@_);
+    exit_trup_shell;
     reboot_on_changes();
 }
 
