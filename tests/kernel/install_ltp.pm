@@ -329,6 +329,7 @@ sub run {
     zypper_call("al kernel-default kernel-default-base") if (is_transactional && (get_var('FLAVOR', '') =~ /Base-RT-Updates|Base-RT|Base-RT-encrypted/));
 
     if ($inst_ltp =~ /git/i) {
+        zypper_call('rm ' . get_default_pkg(), exitcode => [0, 104]);
         install_build_dependencies;
         install_runtime_dependencies;
 
