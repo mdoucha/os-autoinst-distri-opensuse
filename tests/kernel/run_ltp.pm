@@ -392,6 +392,7 @@ sub run {
         die "Timed out waiting for LTP test case which may still be running or the OS may have crashed!";
     }
 
+    script_run('ps aux');
     script_run('vmstat -w');
 }
 
