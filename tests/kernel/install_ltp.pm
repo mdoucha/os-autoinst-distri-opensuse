@@ -83,8 +83,6 @@ sub install_runtime_dependencies {
       fuse-exfat
       ibmtss
       lvm2
-      net-tools
-      net-tools-deprecated
       ntfsprogs
       numactl
       psmisc
@@ -122,8 +120,6 @@ sub install_debugging_tools {
 sub install_runtime_dependencies_network {
     my @deps;
     @deps = qw(
-      dhcp-client
-      dhcp-server
       diffutils
       dnsmasq
       ethtool
@@ -133,7 +129,6 @@ sub install_runtime_dependencies_network {
       rpcbind
       rsync
       telnet
-      tcpdump
       vsftpd
     );
     zypper_call('-t in ' . join(' ', @deps));
