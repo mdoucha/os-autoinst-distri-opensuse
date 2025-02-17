@@ -420,7 +420,7 @@ sub install_kotd {
     remove_kernel_packages;
     zypper_ar($repo, name => 'KOTD', priority => 90, no_gpg_check => 1);
     install_package("-r KOTD $kernel_flavor", trup_continue => 1);
-    install_package('kernel-devel', trup_continue => 1);
+    #install_package('kernel-devel', trup_continue => 1);
 }
 
 sub boot_to_console {
