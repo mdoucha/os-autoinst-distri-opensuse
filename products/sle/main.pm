@@ -789,7 +789,7 @@ elsif (get_var('XFSTESTS')) {
         get_var('ASSET_CHANGE_KERNEL_RPM')) {
         loadtest 'kernel/change_kernel';
     }
-    if (get_var('KOTD_REPO')) {
+    if (get_var('KOTD_REPO') || get_var('KERNEL_VERSION')) {
         loadtest 'kernel/update_kernel';
     }
     prepare_target;
