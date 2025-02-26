@@ -336,8 +336,8 @@ sub find_version {
 
     for my $item (@$verlist) {
         if ($$item{version} =~ qr/^$version_fragment\./) {
-            die "$packname-$version_arg is retracted."
-              if $$item{status} =~ m/^.R/;
+#            die "$packname-$version_arg is retracted."
+#              if $$item{status} =~ m/^.R/;
             return $$item{version};
         }
     }
