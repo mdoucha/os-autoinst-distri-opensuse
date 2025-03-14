@@ -18,6 +18,7 @@ use LTP::utils;
 use version_utils qw(is_jeos is_sle is_sle_micro);
 use utils 'assert_secureboot_status';
 use kdump_utils;
+use utils;
 
 sub run {
     my ($self) = @_;
@@ -51,8 +52,15 @@ sub run {
     select_serial_terminal;
 
     # Debug code for poo#81142
-    script_run('gzip -9 </dev/fb0 >framebuffer.dat.gz');
+    cmd_run('gzip -9 </dev/fb0 >framebuffer.dat.gz');
     upload_logs('framebuffer.dat.gz', failok => 1);
+    cmd_run('echo foo');
+    cmd_run('sleep 3', timeout => 1);
+    select_console('root-console');
+    cmd_run('echo foo');
+    cmd_run('sleep 3', timeout => 1);
+    select_serial_terminal;
+    assert_cmd_run('false');
 
     assert_secureboot_status(1) if (get_var('SECUREBOOT'));
 
@@ -61,7 +69,7 @@ sub run {
     # check kGraft patch if KGRAFT=1
     if (check_var('KGRAFT', '1') && !check_var('REMOVE_KGRAFT', '1')) {
         my $lp_tag = (is_sle('>=15-sp4') || is_sle_micro) ? 'lp' : 'lp-';
-        assert_script_run("uname -v | grep -E '(/kGraft-|/${lp_tag})'");
+        assert_cmd_run("uname -v | grep -E '(/kGraft-|/${lp_tag})'");
     }
 
     # module is used by non-LTP tests, i.e. kernel-live-patching
