@@ -132,6 +132,8 @@ our @EXPORT = qw(
   is_reboot_needed
   install_extra_packages
   render_autoinst_url
+  cmd_run
+  assert_cmd_run
 );
 
 our @EXPORT_OK = qw(
@@ -3312,6 +3314,97 @@ sub render_autoinst_url {
         record_info("Can not render autoinst url from non-openQA url", "Return original url $args{url}", result => 'fail');
         return $args{url};
     }
+}
+
+sub _flush_console {
+    my $buf;
+    my $ret = '';
+
+    while ($buf = wait_serial(".*", timeout => 0, quiet => 1, record_output => 1)) {
+        $ret .= $buf;
+    }
+
+    return $ret;
+}
+
+sub _cmd_run_impl {
+    my ($cmd, %args) = @_;
+
+    $args{timeout} //= $bmwqemu::default_timeout;
+    die "Terminator '&' found in cmd_run call. cmd_run can not check script success. Use 'background_script_run' instead."
+      if $cmd =~ qr/(?<!\\)&\s*$/;
+
+    if (is_serial_terminal()) {
+        wait_serial(serial_terminal::serial_term_prompt(), no_regex => 1, quiet => 1, timeout => 5) or die 'Terminal not ready';
+    }
+
+    my $marker = hashed_string("CR" . $cmd . $args{timeout});
+    my $preface = "echo $marker";
+    my $delim = "echo $marker-\$?-";
+
+    unless (is_serial_terminal()) {
+        $preface .= " >/dev/$testapi::serialdev";
+        $cmd .= "| tee /dev/$testapi::serialdev";
+        $delim .= " >/dev/$testapi::serialdev";
+    }
+
+    $cmd = "$preface; $cmd; $delim";
+    type_string($cmd);
+
+    if (is_serial_terminal()) {
+        wait_serial($cmd, no_regex => 1, timeout => 1, quiet => 1, buffer_size => length($cmd) + 64) or die 'Terminal echo mismatch';
+        type_string("\n");
+    }
+    else {
+        send_key('ret');
+    }
+
+    my $output = wait_serial("$marker-\\d+-", timeout => $args{timeout}, quiet => 1, record_output => 1);
+    $autotest::current_test->take_screenshot() unless is_serial_terminal();
+    die 'Command timed out' unless $output;
+    $output =~ /$marker\n(.*)$marker-(\d+)-/s;
+    return ($2, $1);
+}
+
+=head2 cmd_run
+
+ cmd_run($cmd [, timeout => $timeout])
+
+Run I<$cmd> in console and wait for its completion. In scalar context, return
+command exit code. In array context, return tuple (exit code, console output).
+
+=cut
+
+sub cmd_run {
+    my ($cmd, %args) = @_;
+    my $output = "Command: $cmd\n";
+    my @ret;
+
+    eval {
+        @ret = _cmd_run_impl($cmd, %args);
+    };
+
+    if ($@) {
+        my $log = _flush_console();
+
+        $output .= "Error: $@\n\nConsole output:\n$log";
+        $autotest::current_test->record_resultfile($cmd, $output, result => 'fail');
+        return wantarray ? (undef, undef) : undef;
+    }
+
+    $output .= "Exit code: ${ret[0]}\n\nConsole output:\n${ret[1]}";
+    $autotest::current_test->record_resultfile($cmd, $output, result => ($args{assert} && $ret[0] != 0) ? 'fail' : 'ok');
+    return wantarray ? @ret : $ret[0];
+}
+
+sub assert_cmd_run {
+    my ($cmd, %args) = @_;
+    $args{assert} = 1;
+    my @ret = cmd_run($cmd, %args);
+
+    die "Command '$cmd' timed out" unless defined $ret[0];
+    die "Command '$cmd' failed" unless $ret[0] == 0;
+    return wantarray ? @ret : $ret[0];
 }
 
 1;
