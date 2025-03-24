@@ -336,6 +336,7 @@ sub run {
         assert_script_run("uname -v | grep -E '(/kGraft-|/${lp_tag})'");
     }
 
+    script_run('strace -r curl -O ' . data_url('data/kernel/ifcfg-bond0'));
     upload_logs('/boot/config-$(uname -r)', failok => 1);
     set_zypper_lock_timeout(300);
     add_we_repo_if_available;
