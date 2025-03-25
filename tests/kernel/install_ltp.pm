@@ -336,7 +336,7 @@ sub run {
         assert_script_run("uname -v | grep -E '(/kGraft-|/${lp_tag})'");
     }
 
-    script_run('strace -r curl -O ' . data_url('data/kernel/ifcfg-bond0'));
+    $self->{tcpdump_pid} = background_script_run("tcpdump -i any -w /tmp/tcpdump.pcap &>/tmp/tcpdump.log");
     upload_logs('/boot/config-$(uname -r)', failok => 1);
     set_zypper_lock_timeout(300);
     add_we_repo_if_available;
@@ -420,6 +420,10 @@ sub run {
 sub post_fail_hook {
     my $self = shift;
 
+    script_run("kill -s INT " . $self->{tcpdump_pid});
+    script_run("wait " . $self->{tcpdump_pid});
+    script_run("ls -l /tmp/tcpdump.pcap");
+    script_run("base64 /tmp/tcpdump.pcap");
     upload_system_logs();
 
     # bsc#1024050
