@@ -297,6 +297,9 @@ sub prepare_kgraft {
     install_lock_kernel($kernel_version, $src_version);
     zypper_call("mr -d kgraft-test-repo-0") if get_var('FLAVOR') =~ /-Updates-Staging/;
 
+    enter_trup_shell(global_options => '-c') if is_transactional;
+    zypper_search('-i -s -t package');
+    exit_trup_shell if is_transactional;
     install_klp_product;
 
     if (check_var('REMOVE_KGRAFT', '1') && @all_pkgs) {
