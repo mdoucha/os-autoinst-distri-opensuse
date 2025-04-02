@@ -35,6 +35,9 @@ sub run {
     add_suseconnect_product("sle-sdk") if (is_sle('<12-SP5'));
     install_package('autoconf automake gcc git make');
 
+    zypper_call('lr -d');
+    zypper_search('-sx -t package kernel-default-devel');
+
     if (script_run('[ -d /lib/modules/$(uname -r)/build ]') != 0) {
         my $devel_pack = 'kernel-devel';
 
