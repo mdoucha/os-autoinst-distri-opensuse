@@ -16,6 +16,7 @@ use testapi;
 use serial_terminal 'select_serial_terminal';
 use utils;
 use version_utils qw(is_sle is_sle_micro is_transactional package_version_cmp);
+use bootloader_setup 'add_grub_cmdline_settings';
 use qam;
 use kernel;
 use klp;
@@ -506,7 +507,9 @@ sub run {
 
     my $repo = is_sle_micro('>=6.0') ? get_var('OS_TEST_REPOS') : get_var('KOTD_REPO');
     my $incident_id = undef;
+    my $grub_param = get_var('APPEND_GRUB_PARAMS');
 
+    add_grub_cmdline_settings($grub_param) if defined $grub_param;
     add_extra_customer_repositories;
 
     if (get_var('KERNEL_VERSION')) {
