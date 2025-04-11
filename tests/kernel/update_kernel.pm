@@ -29,6 +29,7 @@ sub check_kernel_package {
     my $kernel_name = shift;
 
     enter_trup_shell(global_options => '-c') if is_transactional;
+    script_run('ls -l /boot/');
     script_run('ls -1 /boot/vmlinu[xz]*');
     # Only check versioned kernels in livepatch tests. Some old kernel
     # packages install /boot/vmlinux symlink but don't set package ownership.
