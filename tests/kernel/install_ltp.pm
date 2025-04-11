@@ -341,6 +341,7 @@ sub run {
     upload_logs('/boot/config-$(uname -r)', failok => 1);
     set_zypper_lock_timeout(300);
     add_we_repo_if_available;
+    zypper_ar(get_var('ULP_REPO'), name => 'ULP_REPO') if get_var('ULP_REPO');
 
     # Enables repositories on full installation medium
     zypper_enable_install_dvd if (get_var('FLAVOR') eq 'Full-QR');
