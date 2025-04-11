@@ -228,11 +228,15 @@ sub install_lock_kernel {
         'kernel-source-rt' => $src_version
     );
 
+    zypper_search('-s -t package kernel');
+
     if (check_var('SLE_PRODUCT', 'slert')) {
         push @packages, "kernel-devel-rt";
+        push @packages, "kernel-rt-devel";
     }
     else {
         push @packages, "kernel-devel";
+        push @packages, "kernel-default-devel";
     }
 
     # add explicit version to each package
