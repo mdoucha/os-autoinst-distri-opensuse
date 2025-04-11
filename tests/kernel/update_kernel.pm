@@ -30,11 +30,13 @@ sub check_kernel_package {
 
     enter_trup_shell(global_options => '-c') if is_transactional;
     script_run('ls -l /boot/');
-    script_run('ls -1 /boot/vmlinu[xz]*');
+    script_run('shopt -s nullglob');
+    script_run('shopt nullglob');
+    script_run('ls -1 /boot/vmlinu[xz]* /boot/[Ii]mage*');
     # Only check versioned kernels in livepatch tests. Some old kernel
     # packages install /boot/vmlinux symlink but don't set package ownership.
     my $glob = get_var('KGRAFT', 0) ? '-*' : '*';
-    my $cmd = 'rpm -qf --qf "%{NAME}\n" /boot/vmlinu[xz]' . $glob;
+    my $cmd = 'shopt -s nullglob; rpm -qf --qf "%{NAME}\n" /boot/vmlinu[xz]' . $glob . ' /boot/[Ii]mage' . $glob;
     my $packs = script_output($cmd);
     exit_trup_shell if is_transactional;
 
