@@ -509,6 +509,7 @@ sub run {
     my $incident_id = undef;
 
     add_extra_customer_repositories;
+    zypper_call('al kernel-rt_debug');
 
     if (get_var('KERNEL_VERSION')) {
         my $kver = get_var('KERNEL_VERSION');
