@@ -459,6 +459,12 @@ sub run {
 sub run_post_fail {
     my ($self, $msg) = @_;
 
+    my $old_console = current_console();
+    select_console('root-console');
+    script_run('ss -n >/root/sockstate.txt');
+    upload_logs('/root/sockstate.txt');
+    select_console($old_console);
+
     $self->upload_oprofile() if defined($self->{oprofile_pid});
     $self->upload_tcpdump() if defined($self->{tcpdump_pid});
     $self->dump_tasktrace() if check_var_array('LTP_DEBUG', 'tasktrace');
