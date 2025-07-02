@@ -243,6 +243,8 @@ sub install_from_git {
     # It is a shallow clone so 'git describe' won't work
     record_info("LTP git", script_output('git log -1 --pretty=format:"git-%h" | tee '
               . get_ltp_version_file()));
+    script_run('cd ..');
+    script_run('rm -rf ltp');
 }
 
 sub setup_network {
@@ -403,6 +405,7 @@ sub run {
     }
 
     (is_jeos && is_sle('>15')) && zypper_call 'in system-user-bin system-user-daemon';
+    script_run('df -h');
 
     # boot_ltp will schedule the tests and shutdown_ltp if there is a command
     # file
