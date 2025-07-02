@@ -333,9 +333,12 @@ sub upload_tcpdump {
         assert_script_run("kill -s INT $pid && wait $pid");
     }
 
+    script_run('ls -lh /tmp/tcpdump.*');
+    script_run('df -h');
     assert_script_run("gzip -f9 /tmp/tcpdump.pcap");
     upload_logs("/tmp/tcpdump.pcap.gz");
     upload_logs("/tmp/tcpdump.log");
+    script_run('rm /tmp/tcpdump.pcap* /tmp/tcpdump.log');
     select_console($old_console) if defined($old_console);
 }
 
