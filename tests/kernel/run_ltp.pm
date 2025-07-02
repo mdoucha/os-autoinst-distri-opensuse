@@ -324,7 +324,7 @@ sub upload_tcpdump {
         $old_console = current_console();
         select_console('root-console');
 
-        unless (defined(script_run("timeout 20 sh -c \"kill -s INT $pid && while [ -d /proc/$pid ]; do usleep 100000; done\""))) {
+        unless (defined(script_run("timeout 20 sh -c \"kill -s INT $pid && while [ -d /proc/$pid ]; do sleep 1; done\""))) {
             select_console($old_console, await_console => 0);
             return;
         }
@@ -333,12 +333,12 @@ sub upload_tcpdump {
         assert_script_run("kill -s INT $pid && wait $pid");
     }
 
-    script_run('ls -lh /tmp/tcpdump.*');
-    script_run('df -h');
-    assert_script_run("gzip -f9 /tmp/tcpdump.pcap");
-    upload_logs("/tmp/tcpdump.pcap.gz");
-    upload_logs("/tmp/tcpdump.log");
-    script_run('rm /tmp/tcpdump.pcap* /tmp/tcpdump.log');
+    script_run('ls -lh /var/tmp/tcpdump.*');
+    script_run('df -h /var/tmp/');
+    assert_script_run("gzip -f9 /var/tmp/tcpdump.pcap", timeout => 1800);
+    upload_logs("/var/tmp/tcpdump.pcap.gz");
+    upload_logs("/var/tmp/tcpdump.log");
+    script_run('rm /var/tmp/tcpdump.pcap* /var/tmp/tcpdump.log');
     select_console($old_console) if defined($old_console);
 }
 
@@ -353,7 +353,7 @@ sub upload_oprofile {
         $old_console = current_console();
         select_console('root-console');
 
-        unless (defined(script_run("timeout 20 sh -c \"kill -s INT $pid && while [ -d /proc/$pid ]; do usleep 100000; done\""))) {
+        unless (defined(script_run("timeout 20 sh -c \"kill -s INT $pid && while [ -d /proc/$pid ]; do sleep 1; done\""))) {
             select_console($old_console, await_console => 0);
             return;
         }
@@ -411,9 +411,9 @@ sub run {
     my $start_time = thetime();
 
     if (check_var_array('LTP_DEBUG', 'tcpdump')) {
-        $self->{tcpdump_pid} = background_script_run("tcpdump -i any -w /tmp/tcpdump.pcap &>/tmp/tcpdump.log");
+        $self->{tcpdump_pid} = background_script_run("tcpdump -i any -w /var/tmp/tcpdump.pcap &>/var/tmp/tcpdump.log");
         # Wait for tcpdump to initialize before running the test
-        script_run('while [ ! -e /tmp/tcpdump.pcap ]; do usleep 100000; done');
+        script_run('while [ ! -e /var/tmp/tcpdump.pcap ]; do sleep 1; done');
     }
 
     if (check_var_array('LTP_DEBUG', 'oprofile')) {
