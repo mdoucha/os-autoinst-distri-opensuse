@@ -309,6 +309,8 @@ EOF
     script_run 'grep -e Huge -e PageTables /proc/meminfo';
     script_run 'echo 1 > /proc/sys/vm/nr_hugepages';
     script_run 'grep -e Huge -e PageTables /proc/meminfo';
+    script_run 'cat /proc/sys/vm/dirty_ratio';
+    script_run 'echo 80 > /proc/sys/vm/dirty_ratio';
 }
 
 sub read_runfile {
