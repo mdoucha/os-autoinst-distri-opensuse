@@ -46,6 +46,7 @@ sub install_package {
         my $cmd = 'pkg in -l ' . $packages;
         $cmd = '-c ' . $cmd if $args{trup_continue} // 0;
         $ret = trup_call($cmd, timeout => $args{timeout});
+        script_run('uname -a');
         check_reboot_changes if $args{trup_reboot};
     }
     else {

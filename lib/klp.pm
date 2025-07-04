@@ -61,12 +61,16 @@ sub install_klp_product {
     # Enable live patching
     if (is_sle_micro) {
         $livepatch_pack .= "-$kver" if defined($kver);
+        script_run('uname -a');
         assert_script_run 'cp /etc/zypp/zypp.conf /etc/zypp/zypp.conf.orig';
         assert_script_run 'sed -i "/^multiversion =.*/c\\multiversion = provides:multiversion(kernel)" /etc/zypp/zypp.conf';
         assert_script_run 'sed -i "/^multiversion\.kernels =.*/c\\multiversion.kernels = latest" /etc/zypp/zypp.conf';
         assert_script_run 'echo "LIVEPATCH_KERNEL=\'always\'" >> /etc/sysconfig/livepatching';
+        script_run('cat /etc/zypp/zypp.conf');
+        script_run('cat /etc/sysconfig/livepatching');
         install_package($livepatch_pack, trup_continue => 1, trup_reboot => 1)
           unless (is_sle_micro('=6.0') || is_sle_micro('=6.1')) && $livepatch_pack eq 'kernel-rt-livepatch-6.4.0-10.1';
+        script_run('uname -a');
     }
     elsif (is_sle('16+')) {
         install_package($livepatch_pack);
