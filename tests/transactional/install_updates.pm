@@ -14,7 +14,7 @@ use qam;
 use transactional;
 use version_utils 'is_sle_micro';
 use serial_terminal;
-use utils qw(script_retry fully_patch_system);
+use utils qw(script_retry fully_patch_system zypper_call);
 
 sub update_system {
     # By default we use 'up', but this covers also the case of 'patch'
@@ -50,6 +50,11 @@ sub run {
     # Now we add the test repositories and do a system update
     add_test_repositories;
     record_info('Updates', script_output('zypper lu'));
+
+    for my $packname (split /,/, get_var('LOCK_PACKAGES', '')) {
+        zypper_call("al $packname") if $packname;
+    }
+
     update_system;
 
     # after update, clean the audit log to make sure there aren't any leftovers that were already fixed
