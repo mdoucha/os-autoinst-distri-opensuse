@@ -49,6 +49,12 @@ sub run {
     }
 
     unless (get_var('KGRAFT')) {
+        my $repos = zypper_repos();
+
+        for my $item (@$repos) {
+            zypper_call("mr -d $$item{name}") if $$item{name} =~ m/^TEST_/;
+        }
+
         zypper_call('ref');
         install_klp_product();
     }
