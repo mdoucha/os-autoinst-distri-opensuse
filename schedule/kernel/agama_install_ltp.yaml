@@ -8,6 +8,7 @@ schedule:
     - installation/grub_test
     - installation/first_boot
     - console/system_prepare
+    - kernel/update_kernel
     - kernel/install_ltp
     - kernel/shutdown_ltp
 conditional_schedule:
