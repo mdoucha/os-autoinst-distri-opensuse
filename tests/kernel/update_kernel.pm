@@ -469,6 +469,7 @@ sub boot_to_console {
     select_serial_terminal;
     assert_script_run('echo 1 >/sys/module/printk/parameters/ignore_loglevel')
       unless is_sle('<12');
+    script_run('lsmod');
 }
 
 sub run {
