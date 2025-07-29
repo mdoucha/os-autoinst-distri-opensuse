@@ -258,6 +258,7 @@ sub init_ltp_tests {
     my $is_ima = $cmd_file =~ m/^ima$/i;
 
     script_run('ps axf') if ($is_network || $is_ima);
+    script_run('echo 0 >/sys/devices/system/cpu/cpu0/online');
 
     if ($is_network) {
         # Disable IPv4 and IPv6 iptables.
