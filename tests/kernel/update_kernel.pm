@@ -507,7 +507,7 @@ sub run {
 
     add_grub_cmdline_settings($grub_param) if defined $grub_param;
     add_extra_customer_repositories;
-    zypper_call('al kernel-rt_debug') if check_var('SLE_PRODUCT', 'slert');
+    #zypper_call('al kernel-rt_debug') if check_var('SLE_PRODUCT', 'slert');
 
     if (get_var('KERNEL_VERSION')) {
         my $kver = get_var('KERNEL_VERSION');
@@ -543,6 +543,7 @@ sub run {
     }
 
     if (get_var('KGRAFT')) {
+        $self->prepare_kernel($kernel_package) if get_var('KERNEL_FLAVOR');
         my $incident_klp_pkg = $self->prepare_kgraft($repo, $incident_id);
         boot_to_console($self);
 
