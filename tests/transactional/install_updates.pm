@@ -55,12 +55,20 @@ sub run {
     # after update, clean the audit log to make sure there aren't any leftovers that were already fixed
     # see poo#169090
     if (is_sle_micro) {
+        script_run('ls -l /var/log/audit; cat /var/log/audit/audit.log; grep -c denied /var/log/audit/audit.log');
         assert_script_run 'tar czf /tmp/audit_before.tgz /var/log/audit';
         upload_logs '/tmp/audit_before.tgz';
         assert_script_run 'rm -f /var/log/audit/* /tmp/audit_before.tgz';
         # upon reboot, auditd service will be restarted and logfile recreated
     }
     process_reboot(trigger => 1);
+}
+
+sub post_fail_hook {
+    my ($self) = @_;
+
+    script_run('ls -l /var/log/audit; cat /var/log/audit/audit.log');
+    $self->SUPER::post_fail_hook();
 }
 
 sub test_flags {
