@@ -355,6 +355,8 @@ sub run {
     }
 
     (is_jeos && is_sle('>15')) && zypper_call 'in system-user-bin system-user-daemon';
+    script_run('ls -l /var/log/audit; cat /var/log/audit/audit.log');
+    script_run('grep -c denied /var/log/audit/audit.log');
 
     # boot_ltp will schedule the tests and shutdown_ltp if there is a command
     # file
