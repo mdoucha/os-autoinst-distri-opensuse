@@ -203,7 +203,8 @@ sub install_lock_kernel {
     }
 
     # remove all kernel related packages from system
-    my @packages = remove_kernel_packages();
+    remove_kernel_packages();
+    my @packages = (get_kernel_flavor);
     my @lpackages = @packages;
     my %packver = (
         'kernel-devel' => $src_version,
@@ -336,7 +337,7 @@ sub prepare_kgraft {
 
 sub downgrade_kernel {
     my $kver = shift;
-    my $kernel_package = 'kernel-default';
+    my $kernel_package = get_kernel_flavor;
     my $src_package = 'kernel-source';
 
     fully_patch_system;
