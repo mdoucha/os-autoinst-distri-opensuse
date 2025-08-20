@@ -67,7 +67,7 @@ sub setup_ulp {
     my $repo_args = '';
 
     install_klp_product if is_sle('<16');
-    install_package('libpulp0 libpulp-tools libpulp-load-default');
+    install_package('libpulp0 libpulp-tools');
 
     if (get_var('INCIDENT_REPO')) {
         my $repo_data = parse_incident_repo();
@@ -123,6 +123,7 @@ sub run {
 
     # Regenerate logs created by install_ltp because /tmp was wiped by reboot
     log_versions(1) if is_transactional;
+    assert_script_run('export LD_PRELOAD=/usr/lib64/libpulp.so.0');
     schedule_tests('openposix', "_glibc-$libver");
     loadtest_kernel('ulp_threads', name => "ulp_threads_glibc-$libver",
         run_args => $tinfo);
