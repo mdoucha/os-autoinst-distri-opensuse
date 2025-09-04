@@ -15,7 +15,7 @@ use serial_terminal 'select_serial_terminal';
 use Utils::Backends;
 use LTP::utils;
 use version_utils qw(is_jeos is_sle is_sle_micro);
-use utils 'assert_secureboot_status';
+use utils qw(assert_secureboot_status zypper_call);
 use kdump_utils;
 use package_utils;
 
@@ -60,6 +60,7 @@ sub run {
     upload_logs('framebuffer.dat.gz', failok => 1);
 
     assert_secureboot_status(1) if (get_var('SECUREBOOT'));
+    zypper_call('up ltp-stable', exitcode => [0, 106]);
 
     log_versions;
 
