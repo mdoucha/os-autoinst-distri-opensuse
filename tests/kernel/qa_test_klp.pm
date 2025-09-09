@@ -46,6 +46,11 @@ sub run {
 
     reboot_on_changes;
 
+    if (script_run('[ -d /lib/modules/$(uname -r)/build ]') != 0) {
+        upload_logs('/var/log/zypper.log');
+        die 'Kernel module devel package was not installed';
+    }
+
     assert_script_run('git config --global http.sslVerify false');
     assert_script_run('git clone ' . $git_repo);
     assert_script_run("cd $dir");
