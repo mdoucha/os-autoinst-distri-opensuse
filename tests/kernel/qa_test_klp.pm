@@ -41,7 +41,7 @@ sub run {
         }
 
         # Force recommended packages to pull in kernel-default-devel, etc.
-        install_package("--recommends $devel_pack", trup_continue => 1);
+        install_package("--recommends $devel_pack kernel-default-devel", trup_continue => 1);
     }
 
     reboot_on_changes;
