@@ -43,15 +43,14 @@ sub parse_incident_repo {
     elsif (grep { exists($ulp_tools{$$_{name}}) } @$packlist) {
         record_info('Tools tests', "Incident $incident_id contains livepatching tools.");
 
-        my $patches = get_patches($incident_id, $repo);
+        #my $patches = get_patches($incident_id, $repo);
 
-        die "Patch isn't needed" unless $patches;
+        #die "Patch isn't needed" unless $patches;
         $packname = 'openposix-livepatches';
         $repo_args = '';
 
         # Install the libpulp/tools update before running tests
-        zypper_call("in -l -t patch $patches", exitcode => [0, 102, 103],
-            log => 'zypper.log', timeout => 1400);
+        fully_patch_system();
     }
     else {
         # Incident has no userspace livepatch related packages, nothing to do
@@ -124,7 +123,7 @@ sub run {
     # Schedule openposix tests and install the livepatch
     my $libver = $tinfo->{glibc_versions}[$tinfo->{run_id}];
     record_info('glibc version', $libver);
-    install_package("--oldpackage glibc-$libver", trup_continue => 1, trup_reboot => 1);
+    install_package("--oldpackage -f glibc-$libver", trup_continue => 1, trup_reboot => 1);
 
     # Reconfigure LTP environment after reboot
     if (is_transactional()) {
