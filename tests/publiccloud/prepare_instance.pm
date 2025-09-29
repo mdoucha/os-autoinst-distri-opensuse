@@ -57,6 +57,8 @@ sub run {
 
     # We expect that the testapi user (typically 'bernhard') is allowed to run sudo commands
     $instance->ssh_assert_script_run("echo \"$testapi::username ALL=(ALL) ALL\" | sudo tee /etc/sudoers.d/010_openqa");
+    $instance->ssh_assert_script_run("cat /proc/schedstat");
+    die('Test complete');
 }
 
 sub test_flags {
