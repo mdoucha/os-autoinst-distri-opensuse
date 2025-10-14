@@ -518,6 +518,7 @@ sub run {
 
         downgrade_kernel($kver);
         check_kernel_package($kernel_package);
+        upload_logs('/boot/initrd');
         power_action('reboot', textmode => 1);
 
         if (get_var('KGRAFT')) {
@@ -585,6 +586,7 @@ sub run {
     }
 
     check_kernel_package($kernel_package);
+    upload_logs('/boot/initrd');
 
     if (is_transactional) {
         reboot_on_changes;
