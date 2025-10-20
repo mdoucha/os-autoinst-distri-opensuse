@@ -363,6 +363,10 @@ sub run {
 
     (is_jeos && is_sle('>15')) && zypper_call 'in system-user-bin system-user-daemon';
 
+    script_run('realpath /sys/block/*');
+    script_run('ls -l /sys/block/*/device/generic');
+    script_run('ls /dev');
+
     # boot_ltp will schedule the tests and shutdown_ltp if there is a command
     # file
     if (get_var('LTP_INSTALL_REBOOT') || (is_transactional && $cmd_file)) {
