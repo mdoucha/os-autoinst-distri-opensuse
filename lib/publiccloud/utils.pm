@@ -55,6 +55,7 @@ our @EXPORT = qw(
   create_script_file
   install_in_venv
   venv_activate
+  venv_deactivate
   get_python_exec
   zypper_add_repo_remote
   zypper_remove_repo_remote
