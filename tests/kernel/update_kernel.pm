@@ -532,6 +532,7 @@ sub run {
     my $incident_id = undef;
     my $grub_param = get_var('APPEND_GRUB_PARAMS');
 
+    $repo = get_var('INCREMENT_REPO') unless $repo;
     add_grub_cmdline_settings($grub_param) if defined $grub_param;
     add_extra_customer_repositories;
     zypper_call('al kernel-rt_debug') if check_var('SLE_PRODUCT', 'slert');
