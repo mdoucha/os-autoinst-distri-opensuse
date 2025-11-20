@@ -813,7 +813,7 @@ sub fully_patch_system {
         transactional::trup_call('patch', timeout => $trup_call_timeout);
         transactional::reboot_on_changes();
         # Continue with patch
-        transactional::trup_call('patch', timeout => $trup_call_timeout);
+        transactional::trup_call('dup', timeout => $trup_call_timeout);
         transactional::reboot_on_changes();
         return;
     } else {
