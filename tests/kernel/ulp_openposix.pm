@@ -51,6 +51,7 @@ sub parse_incident_repo {
 
         # Install the libpulp/tools update before running tests
         fully_patch_system();
+        install_package('libpulp0-0.3.17-slfo.1.1_163.1 libpulp-tools-0.3.17-slfo.1.1_163.1', trup_reboot => 1);
     }
     else {
         # Incident has no userspace livepatch related packages, nothing to do
