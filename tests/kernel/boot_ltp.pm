@@ -76,6 +76,13 @@ sub run {
     prepare_ltp_env;
     init_ltp_tests($cmd_file);
 
+    my $filename = '/sys/kernel/debug/tracing/events/kmem/mm_kernel_pagefault/enable';
+
+    while (script_run("test -e $filename")) {
+        $filename =~ s#/[^/]*$##;
+    }
+
+    record_info('Tracing', "Existing path subset: $filename");
     assert_script_run('cat /sys/kernel/debug/tracing/events/kmem/mm_kernel_pagefault/enable');
 
     # If the command file (runtest file) is set then we dynamically schedule
