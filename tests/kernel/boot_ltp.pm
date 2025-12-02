@@ -76,6 +76,8 @@ sub run {
     prepare_ltp_env;
     init_ltp_tests($cmd_file);
 
+    assert_script_run('cat /sys/kernel/debug/tracing/events/kmem/mm_kernel_pagefault/enable');
+
     # If the command file (runtest file) is set then we dynamically schedule
     # the test and shutdown modules.
     schedule_tests($cmd_file) if $cmd_file;
