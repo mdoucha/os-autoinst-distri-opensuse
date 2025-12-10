@@ -84,6 +84,7 @@ sub update_kernel {
     #Get patch list related to incident
     my $patches = '';
     $patches = get_patches($incident_id, $repo);
+    record_info("Patches", $patches);
 
     if (!$patches) {
         if (get_var('FLAVOR') =~ /-Increments/) {
