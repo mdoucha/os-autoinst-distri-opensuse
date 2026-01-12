@@ -220,6 +220,7 @@ sub get_patches {
           (!defined($incident_id) || $item->{name} =~ m/$incident_id/);
     }
 
+    record_info('Get patches', join("\n", @patch_list));
     return join(' ', @patch_list);
 }
 
