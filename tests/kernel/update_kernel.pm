@@ -272,7 +272,6 @@ sub prepare_kgraft {
 
     #add repository with tested patch
     my $incident_klp_pkg;
-    my @all_pkgs;
 
     $self->add_update_repos($repo);
     $self->enable_update_repos(0) unless get_var('NO_DISABLE_REPOS');
@@ -289,8 +288,6 @@ sub prepare_kgraft {
                 }
             }
         }
-
-        push @all_pkgs, @$pkgs;
     }
 
     if (!$incident_klp_pkg) {
@@ -308,11 +305,8 @@ sub prepare_kgraft {
     install_lock_kernel($kernel_version, $src_version);
     $self->enable_update_repos(0) if get_var('FLAVOR') =~ /-Updates-Staging/ && !get_var('NO_DISABLE_REPOS');
 
-    install_klp_product($kernel_version);
-
-    if (check_var('REMOVE_KGRAFT', '1') && @all_pkgs) {
-        my $pversion = join(' ', map { $$_{name} } @all_pkgs);
-        zypper_call("rm " . $pversion);
+    unless (check_var('REMOVE_KGRAFT', '1')) {
+        install_klp_product($kernel_version);
     }
 
     check_kernel_package($kernel_name);
