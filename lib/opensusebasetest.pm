@@ -918,8 +918,10 @@ sub wait_boot {
     reset_consoles;
     select_console('sol', await_console => 0) if is_ipmi;
     if (reconnect_s390(textmode => $textmode, ready_time => $ready_time, enable_root_ssh => $enable_root_ssh)) {
+        record_info('reconnect_s390', 'NOP');
     }
     elsif (get_var('USE_SUPPORT_SERVER') && get_var('USE_SUPPORT_SERVER_PXE_CUSTOMKERNEL')) {
+        record_info('Support server', 'Custom PXE');
         # A supportserver client to reboot via PXE after an initial installation.
         # No GRUB menu. Instead, the mandatory parallel supportserver job is
         # supposedly ready to provide the desired customized PXE boot menu.
@@ -932,8 +934,10 @@ sub wait_boot {
     # When no bounce back on power KVM, we need skip bootloader process and go ahead when 'displaymanager' matched.
     # minimal-VM does not have any display manager
     elsif (get_var('OFW') && !check_var('DESKTOP', 'textmode') && (check_screen('displaymanager', 5))) {
+        record_info('OFW', 'NOP');
     }
     elsif (is_bootloader_grub2) {
+        record_info('Grub2', 'Handling');
         assert_screen([qw(virttest-pxe-menu qa-net-selection prague-pxe-menu pxe-menu)], 600) if (uses_qa_net_hardware() || get_var("PXEBOOT"));
         $self->handle_grub(bootloader_time => $bootloader_time, in_grub => $in_grub);
         # part of soft failure bsc#1118456
@@ -946,9 +950,11 @@ sub wait_boot {
             }
         }
     } elsif (is_bootloader_sdboot) {
+        record_info('SystemD boot', 'Send key');
         assert_screen 'systemd-boot', 300;
         send_key('ret');
     } elsif (is_bootloader_grub2_bls) {
+        record_info('Grub2-BLS', 'Handling');
         $self->handle_grub(bootloader_time => $bootloader_time, in_grub => $in_grub);
     } else {
         die 'Unknown bootloader';
