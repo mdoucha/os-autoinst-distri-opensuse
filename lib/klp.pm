@@ -70,6 +70,8 @@ sub install_klp_product {
     # Enable live patching
     if (is_sle('16+') || is_sle_micro('6.2+')) {
         install_package('-t pattern kernel_livepatching', trup_continue => 1, trup_reboot => 1);
+        cmd_run('cat /etc/zypp/zypp.conf');
+        cmd_run('cat /etc/sysconfig/livepatching');
     }
     elsif (is_sle_micro) {
         $livepatch_pack .= "-$kver" if defined($kver);
