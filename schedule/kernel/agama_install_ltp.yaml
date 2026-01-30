@@ -10,7 +10,6 @@ schedule:
     - '{{update_kernel}}'
     - console/system_prepare
     - kernel/install_ltp
-    - kernel/shutdown_ltp
 conditional_schedule:
     boot:
         IPXE:
