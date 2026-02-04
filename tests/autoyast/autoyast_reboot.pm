@@ -10,8 +10,15 @@
 use base 'basetest';
 use testapi;
 use power_action_utils 'power_action';
+use serial_terminal;
 
 sub run {
+    if (is_ipmi) {
+        select_console('sol');
+        login('root', '# ');
+        script_run('clear');
+    }
+
     # We are already in console, so reboot from it and do not switch to x11 or root console
     # Note, on s390x with SLE15 VNC is not running even if enabled in the profile
     power_action('reboot', textmode => 1, keepconsole => 1);
