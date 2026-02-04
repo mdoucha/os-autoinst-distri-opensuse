@@ -397,7 +397,7 @@ sub run {
 
     # when we don't use autoyast, we need to also load the right test modules to perform the remote installation
     unless (get_var('AUTOYAST')) {
-        my $ssh_vnc_wait_time = 1500;
+        my $ssh_vnc_wait_time = get_var('PXE_BOOT_TIME', 1500);
         #for virtualization test, 9 minutes is enough to load installation system, 75 minutes is too long
         $ssh_vnc_wait_time = 180 if get_var('VIRT_AUTOTEST');
         my $ssh_vnc_tag = eval { check_var('VIDEOMODE', 'text') ? 'sshd' : 'vnc' } . '-server-started';
