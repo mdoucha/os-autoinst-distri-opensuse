@@ -37,6 +37,10 @@ sub run {
 
     script_run('cat /proc/stat');
     script_run('df -h');
+    script_run('lsusb');
+    script_run('ls /dev');
+    script_run('ls -l /sys/block/*/device');
+    script_run('ls -l /sys/block/*/device/');
     check_kernel_taint($self, has_published_assets() ? 1 : 0);
 
     if (get_var('LTP_COMMAND_FILE')) {
