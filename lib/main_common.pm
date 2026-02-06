@@ -1122,7 +1122,7 @@ sub load_inst_tests {
         set_var('KEEP_GRUB_TIMEOUT', 1) if check_var('VIRSH_VMM_TYPE', 'linux') || (get_var('SELINUX') && (is_sle('<16') || is_leap('<16.0')));
         loadtest 'installation/configure_bls' if (is_bootloader_sdboot || is_bootloader_grub2_bls);
         loadtest "installation/disable_grub_timeout" if is_bootloader_grub2 && !get_var('KEEP_GRUB_TIMEOUT');
-        if (check_var('VIDEOMODE', 'text') && is_ipmi) {
+        if (is_ipmi) {
             loadtest "installation/disable_grub_graphics";
         }
         # Do not run enable_selinux in systems that have SELinux by default (bsc#1230118)
