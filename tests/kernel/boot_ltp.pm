@@ -78,6 +78,7 @@ sub run {
     check_kernel_taint($self, 1);
     prepare_ltp_env;
     init_ltp_tests($cmd_file);
+    script_run('cat /proc/interrupts');
 
     # If the command file (runtest file) is set then we dynamically schedule
     # the test and shutdown modules.
