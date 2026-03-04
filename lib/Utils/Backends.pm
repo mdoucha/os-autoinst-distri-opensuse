@@ -16,6 +16,7 @@ use warnings;
 
 use base 'Exporter';
 use Exporter;
+use autotest 'query_isotovideo';
 use testapi ':DEFAULT';
 use Utils::Architectures 'is_s390x';
 
@@ -25,6 +26,7 @@ use constant {
           is_remote_backend
           has_ttys
           has_serial_over_ssh
+          has_snapshots
           is_hyperv
           is_hyperv_in_gui
           is_svirt_except_s390x
@@ -132,6 +134,16 @@ Returns true if the current instance is using a serial through ssh
 
 sub has_serial_over_ssh {
     return ((get_var('BACKEND', '') =~ /^(ikvm|ipmi|spvm|pvm_hmc|generalhw)/) && !defined(get_var('GENERAL_HW_VNC_IP')) && !defined(get_var('GENERAL_HW_SOL_CMD')));
+}
+
+=head2 has_snapshots
+
+Returns true if the current instance supports rollback to snapshot
+
+=cut
+
+sub has_snapshots {
+    return query_isotovideo('backend_can_handle', {function => 'snapshots'});
 }
 
 =head2 is_hyperv
