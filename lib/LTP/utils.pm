@@ -561,18 +561,18 @@ sub setup_kernel_logging {
 
 sub init_debug {
     select_serial_terminal;
-    return unless (get_var('LTP_COMMAND_FILE') && get_var('LTP_DEBUG'));
-    record_info('LTP_DEBUG', get_var('LTP_DEBUG'));
+    return unless get_var('KERNEL_DEBUG');
+    record_info('KERNEL_DEBUG', get_var('KERNEL_DEBUG'));
 
-    if (check_var_array('LTP_DEBUG', 'crashdump')) {
+    if (check_var_array('KERNEL_DEBUG', 'crashdump')) {
         configure_service(yast_interface => 'cli');
     }
 
-    if (check_var_array('LTP_DEBUG', 'oprofile')) {
+    if (check_var_array('KERNEL_DEBUG', 'oprofile')) {
         install_package('oprofile', trup_reboot => 1);
     }
 
-    if (check_var_array('LTP_DEBUG', 'supportconfig')) {
+    if (check_var_array('KERNEL_DEBUG', 'supportconfig')) {
         install_package('supportutils', trup_reboot => 1);
     }
 
@@ -584,7 +584,7 @@ sub init_debug {
 }
 
 sub run_supportconfig {
-    return unless check_var_array('LTP_DEBUG', 'supportconfig');
+    return unless check_var_array('KERNEL_DEBUG', 'supportconfig');
     script_run("supportconfig -B ltp", timeout => 1800);
     upload_logs("/var/log/scc_ltp.txz", failok => 1);
 }
