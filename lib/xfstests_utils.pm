@@ -60,6 +60,7 @@ our @EXPORT = qw(
   exclude_grouplist
   include_grouplist
   tests_from_ranges
+  get_xfstests_command
   test_run
   save_kdump
   shuffle
@@ -335,6 +336,19 @@ sub tests_from_ranges {
     return @tests;
 }
 
+sub get_xfstests_command {
+    my ($test, $fstype, $inject_info) = @_;
+    my $run_options = '';
+    if ($fstype =~ 'nfs') {
+        $run_options = '-nfs';
+    }
+    elsif ($fstype =~ 'overlay') {
+        $run_options = '-overlay';
+    }
+    my $cmd = "$TEST_WRAPPER '$test' $run_options $inject_info";
+    return $cmd;
+}
+
 =head2 test_run
 
 # Run a single test and write log to file
@@ -345,14 +359,8 @@ sub tests_from_ranges {
 sub test_run {
     my ($test, $fstype, $inject_info) = @_;
     my ($category, $num) = split(/\//, $test);
-    my $run_options = '';
-    if ($fstype =~ 'nfs') {
-        $run_options = '-nfs';
-    }
-    elsif ($fstype =~ 'overlay') {
-        $run_options = '-overlay';
-    }
-    my $cmd = "\n$TEST_WRAPPER '$test' $run_options $inject_info | tee $LOG_DIR/$category/$num; ";
+    my $cmd = get_xfstests_command($test, $fstype, $inject_info);
+    $cmd .= " | tee $LOG_DIR/$category/$num; ";
     $cmd .= "echo \${PIPESTATUS[0]} > $HB_DONE_FILE\n";
     type_string($cmd);
 }
@@ -566,16 +574,12 @@ sub test_run_without_heartbeat {
     my $run_options = '';
     my $status_num = 1;
     my $test_timeout = 0;
-    if ($fstype =~ /nfs/) {
-        $run_options = '-nfs';
-    }
-    elsif ($fstype =~ /overlay/) {
-        $run_options = '-overlay';
-    }
+    my $cmd = get_xfstests_command($test, $fstype, $inject_info);
+
     eval {
         $test_start = time();
         # Send kill signal 3 seconds after sending the default SIGTERM to avoid some tests refuse to stop after timeout
-        assert_script_run("timeout -k 3 " . ($timeout - 5) . " $TEST_WRAPPER '$test' $run_options $inject_info | tee $LOG_DIR/$category/$num; echo \${PIPESTATUS[0]} > $LOG_DIR/subtest_result_num", $timeout);
+        assert_script_run("timeout -k 3 " . ($timeout - 5) . " $cmd | tee $LOG_DIR/$category/$num; echo \${PIPESTATUS[0]} > $LOG_DIR/subtest_result_num", $timeout);
         $test_duration = time() - $test_start;
     };
     if ($@) {
