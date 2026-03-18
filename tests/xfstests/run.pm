@@ -29,6 +29,7 @@ use filesystem_utils qw(format_partition generate_xfstests_list);
 use lockapi;
 use mmapi;
 use version_utils 'is_public_cloud';
+use LTP::TestInfo 'testinfo';
 use LTP::utils;
 use LTP::WhiteList;
 use xfstests_utils;
@@ -85,6 +86,7 @@ sub run {
     my ($self, $args) = @_;
     select_serial_terminal;
     return if get_var('XFSTESTS_NFS_SERVER');
+    my $suite = get_var('TEST');
     my $enable_heartbeat = 1;
     $enable_heartbeat = 0 if (check_var 'XFSTESTS_NO_HEARTBEAT', '1');
 
@@ -92,6 +94,14 @@ sub run {
 
     # Load whitelist environment
     my $whitelist_env = prepare_whitelist_environment();
+    my $test_result_export = {
+        format => 'result_array:v2',
+        environment => $whitelist_env,
+        results => []
+    };
+    $whitelist_env->{kernel} = script_output('uname -r');
+    $whitelist_env->{libc} = script_output('rpm -q glibc');
+    $whitelist_env->{ltp_version} = script_output('rpm -q xfstests');
 
     # Get wrapper
     assert_script_run("curl -o $TEST_WRAPPER " . data_url('xfstests/wrapper.sh'));
@@ -133,13 +143,16 @@ sub run {
         if (exists($black_list{$test}) || ($whitelist && $whitelist->is_test_disabled($whitelist_env, $TEST_SUITE, $test))) {
             next;
         }
-        my $targs = OpenQA::Test::RunArgs->new();
+
+        my $tinfo = {
+            name => $test,
+            last_one => 0
+        };
+        $tinfo->{my_instance} = $args->{my_instance} if is_public_cloud;
+        my $targs = testinfo($test_result_export, test => $tinfo, runfile => $suite);
+
         # Change / to -, because openqa will see / as path and it'll fail to find run file in loadtest
         $test =~ s/\//-/;
-        $targs->{name} = $test;
-        $targs->{enable_heartbeat} = $enable_heartbeat;
-        $targs->{last_one} = 0;
-        $targs->{my_instance} = $args->{my_instance} if is_public_cloud;
         if ($index == $subtest_num - 1) {
             mutex_create 'last_subtest_run_finish';
             $targs->{last_one} = 1;
