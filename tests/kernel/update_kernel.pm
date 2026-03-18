@@ -514,6 +514,8 @@ sub run {
         boot_to_console($self);
     }
 
+    cmd_run('ls -l /dev/disk/by-id/');
+
     # Install requirements for SLE 16 staging tests
     install_requirements if get_var('FLAVOR') =~ /Updates-Staging/;
 
