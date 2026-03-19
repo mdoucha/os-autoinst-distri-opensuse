@@ -18,6 +18,7 @@ sub run {
     my ($self) = @_;
 
     select_console('root-console');
+    script_output('ls -l /dev/disk/by-id/');
 
     disable_and_stop_service('packagekit.service', mask_service => 1);
 
