@@ -3742,9 +3742,9 @@ sub dump_tasktrace {
     my $old_console = current_console();
 
     select_console('root-console', await_console => 0);
-    send_key('alt-sysrq-l');
-    send_key('alt-sysrq-t');
-    send_key('alt-sysrq-w');
+    script_run('echo l >/proc/sysrq-trigger');
+    script_run('echo t >/proc/sysrq-trigger');
+    script_run('echo w >/proc/sysrq-trigger');
     wait_serial(qr/sysrq: .*Show Blocked State/, timeout => 300);
     send_key('ret');
     select_console($old_console, await_console => 0);
