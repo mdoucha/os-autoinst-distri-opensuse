@@ -52,7 +52,7 @@ sub prepare_kernel {
 
     fully_patch_system;
     remove_kernel_packages();
-    zypper_call("in -l ${kernel_name}", exitcode => [0, 100, 101, 102, 103], timeout => 700);
+    install_package($kernel_name, trup_continue => 1);
     check_kernel_package($kernel_name);
     power_action('reboot', textmode => 1);
     reconnect_mgmt_console if is_pvm;
