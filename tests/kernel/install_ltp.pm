@@ -102,7 +102,7 @@ sub install_runtime_dependencies {
     # via modprobe config file but SLE-12 does not. LTP tests for those
     # modules then fail on SLE-12 because the required driver is available but
     # modprobe refuses to load it.
-    push @maybe_deps, 'kernel-default-extra' unless is_sle('<15');
+    push @maybe_deps, 'kernel-default-extra' unless is_sle('<15') || get_kernel_flavor() ne 'kernel-default';
 
     # exfatprogs create a conflict with exfat-utils on Tumbleweed.
     push @maybe_deps, 'exfatprogs' unless is_tumbleweed();
