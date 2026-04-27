@@ -138,6 +138,7 @@ sub run {
     }
 
     schedule_tests('openposix', "_glibc-$libver");
+    script_run('ulp patches');
     loadtest_kernel('ulp_threads', name => "ulp_threads_glibc-$libver",
         run_args => $tinfo);
     install_package($tinfo->{packname});
