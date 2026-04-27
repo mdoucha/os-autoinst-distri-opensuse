@@ -414,7 +414,7 @@ sub parse_openposix_runfile {
             # and change the test command to unpause the existing process
             if ($ulp_test) {
                 my $pid = background_script_run("$line --livepatch");
-                $line = "kill -s SIGUSR1 $pid; wait $pid";
+                $line = "ulp messages -p $pid; kill -s SIGUSR1 $pid; wait $pid";
             }
 
             my $test = {name => $testname, command => $line};
