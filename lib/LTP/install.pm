@@ -48,7 +48,6 @@ sub get_maybe_build_dependencies {
       keyutils-devel
       libacl-devel
       libaio-devel
-      libcap-devel
       libmnl-devel
       libnuma-devel
       libselinux-devel
@@ -61,7 +60,6 @@ sub get_maybe_build_dependencies {
       keyutils-devel-32bit
       libacl-devel-32bit
       libaio-devel-32bit
-      libcap-devel-32bit
       libnuma-devel-32bit
       libselinux-devel-32bit
       libtirpc-devel-32bit
