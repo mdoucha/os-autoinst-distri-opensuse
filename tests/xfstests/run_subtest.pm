@@ -118,6 +118,9 @@ sub run {
     $self->{targs} = \%targs;
     $self->{result_args} = {status => 'FAILED', time => 'timeout'};
 
+    script_run('df -h');
+    script_run('btrfs filesystem df /');
+    script_run('btrfs filesystem df /opt/scratch');
     $whitelist_env->{kernel} = script_output('uname -r');
     $whitelist_env->{libc} = script_output('rpm -q glibc');
     $whitelist_env->{ltp_version} = script_output('rpm -q xfstests');
