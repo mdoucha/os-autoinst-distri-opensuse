@@ -590,6 +590,8 @@ sub init_debug {
 
     if (check_var_array('LTP_DEBUG', 'crashdump')) {
         configure_service(yast_interface => 'cli');
+        script_run('echo 1 >/proc/sys/kernel/panic_on_oops');
+        script_run('echo 1 >/proc/sys/kernel/panic_on_warn');
     }
 
     if (check_var_array('LTP_DEBUG', 'oprofile')) {
