@@ -295,9 +295,15 @@ sub save_crashdump {
     my $old_console = current_console();
 
     select_console('root-console');
-    script_run('rm -rf /var/crash/*');
-    send_key('alt-sysrq-s');
-    send_key('alt-sysrq-c');
+
+    my $panicked = wait_serial('Kernel panic - not syncing', no_regex => 1, timeout => 1);
+
+    if (!defined($panicked)) {
+        script_run('rm -rf /var/crash/*');
+        send_key('alt-sysrq-s');
+        send_key('alt-sysrq-c');
+    }
+
     reset_consoles;
     $self->wait_boot;
     select_console($old_console);
