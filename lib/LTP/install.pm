@@ -36,7 +36,7 @@ sub get_required_build_dependencies {
     if (is_rt) {
         push @deps, 'kernel-rt-devel';
     }
-    elsif (!get_var('KGRAFT')) {
+    elsif (!get_var('KGRAFT') && !get_var('KERNEL_VERSION')) {
         push @deps, 'kernel-default-devel';
     }
 
