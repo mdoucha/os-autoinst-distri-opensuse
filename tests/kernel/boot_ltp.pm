@@ -17,7 +17,7 @@ use version_utils qw(is_jeos is_sle is_sle_micro is_bootloader_grub2_bls);
 use bootloader_setup qw(modify_grub_parameters_grub2_bls);
 use power_action_utils 'power_action';
 use serial_terminal qw(select_serial_terminal);
-use utils 'assert_secureboot_status';
+use utils;
 use kdump_utils;
 use kernel;
 
@@ -42,6 +42,11 @@ sub run {
         # during install_ltp, the second boot may take longer than usual
         $self->wait_boot(ready_time => 1800);
     }
+
+    select_console('root-console');
+    cmd_run('true');
+    assert_script_run('false');
+    assert_script_run('true') for (1..5);
 
     # if we need to test with modified grub parameters
     if (get_var('GRUB_ARGS') && is_bootloader_grub2_bls()) {
