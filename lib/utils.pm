@@ -2926,7 +2926,7 @@ sub script_start_io {
             quiet => $args{quiet});
     }
     else {
-        $cmd .= " >/dev/$serialdev";
+        $cmd .= " &>/dev/$serialdev";
         $marker .= " >/dev/$serialdev";
     }
 
