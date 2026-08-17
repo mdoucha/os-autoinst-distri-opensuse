@@ -50,8 +50,12 @@ sub run {
     assert_script_run('git clone ' . $git_repo);
     assert_script_run("cd $dir");
     record_info('qa_test_klp', script_output("git show | tee"));
+    assert_script_run('echo "file kernel/livepatch/* +p" > /sys/kernel/debug/dynamic_debug/control');
     record_info('bats', script_output("which bats 2>&1", proceed_on_failure => 1));
+    my $pid = background_script_run('source ./klp_tc_functions.sh; while true; do sleep 5; date |tee /tmp/klp-blocking.txt; klp_dump_blocking_processes |tee /tmp/klp-blocking.txt; done');
     assert_script_run("./run.sh", timeout => 300);
+    script_run("kill -9 $pid");
+    cmd_run('cat /tmp/klp-blocking.txt');
 }
 
 1;
