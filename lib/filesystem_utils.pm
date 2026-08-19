@@ -94,7 +94,7 @@ sub partition_num_by_start_end {
     my ($dev, $start, $end) = @_;
     my $output = parted_print(dev => $dev);
     my $match;
-    if ($output =~ /(\d+)\s+($start)MB\s+($end)MB\s+(\d+\.?\d*)MB/i) {
+    if ($output =~ /(\d+)\s+($start(?:\.00)?)MB\s+($end)MB\s+(\d+\.?\d*)MB/i) {
         $match = $1;
     }
     return $match;
@@ -217,6 +217,7 @@ sub create_partition {
     }
     my %space = free_space(dev => $dev, unit => 'MB');
     my $space_size = int($space{size});
+    $space{start} = 1 if ($space{start} > 0 && $space{start} < 1);
     if ($space_size == 0) {
         die 'No space left in device!';
     }
