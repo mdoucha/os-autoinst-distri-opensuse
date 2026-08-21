@@ -403,6 +403,8 @@ sub run {
         $self->{oprofile_pid} = background_script_run('operf -ls -d /tmp/ltp_oprofile &>/tmp/ltp_oprofile.txt');
     }
 
+    cmd_run('ps aux --sort=-vsz | head -n20');
+
     if (is_serial_terminal) {
         script_run("echo '$klog_stamp' > /dev/kmsg");
         # SLE11-SP4 doesn't support ignore_loglevel, due that stamp is not printed in console
