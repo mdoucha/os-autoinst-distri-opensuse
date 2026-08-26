@@ -75,6 +75,7 @@ sub update_kernel {
     #Get patch list related to incident
     my $patches = '';
     $patches = get_patches($incident_id, $repo);
+    $self->enable_update_repos(0);
 
     if (!$patches) {
         if (get_var('FLAVOR') =~ /-Increments|-Updates$/) {
@@ -84,16 +85,16 @@ sub update_kernel {
 
         die "Patch isn't needed";
     }
-    else {
-        # Use single patch or patch list
-        if (is_transactional) {
-            # Proceed with transactional-update patch. Also handle zypper
-            # updates which may require running patch twice.
-            fully_patch_system;
-        } else {
-            zypper_call("in -l -t patch $patches", exitcode => [0, 102, 103], log => 'zypper.log', timeout => 1400);
-        }
-    }
+#    else {
+#        # Use single patch or patch list
+#        if (is_transactional) {
+#            # Proceed with transactional-update patch. Also handle zypper
+#            # updates which may require running patch twice.
+#            fully_patch_system;
+#        } else {
+#            zypper_call("in -l -t patch $patches", exitcode => [0, 102, 103], log => 'zypper.log', timeout => 1400);
+#        }
+#    }
 }
 
 sub mod_rpm_info {
