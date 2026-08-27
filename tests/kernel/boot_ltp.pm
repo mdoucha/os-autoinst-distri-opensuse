@@ -20,6 +20,7 @@ use serial_terminal qw(select_serial_terminal);
 use utils 'assert_secureboot_status';
 use kdump_utils;
 use kernel;
+use package_utils;
 
 sub run {
     my ($self) = @_;
@@ -75,9 +76,12 @@ sub run {
     # module is used by non-LTP tests, i.e. kernel-live-patching
     return unless (get_var('LTP_COMMAND_FILE'));
 
+    install_package('heaptrack', trup_apply => 1);
     check_kernel_taint($self, 1);
     prepare_ltp_env;
     init_ltp_tests($cmd_file);
+    script_run('LD_PRELOAD=/usr/lib64/libdl.so.2');
+    assert_script_run('echo 0 >/proc/sys/kernel/yama/ptrace_scope');
 
     # If the command file (runtest file) is set then we dynamically schedule
     # the test and shutdown modules.

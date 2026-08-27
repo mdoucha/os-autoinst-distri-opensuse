@@ -391,9 +391,12 @@ sub run {
         loadtest_kernel 'boot_ltp';
     } elsif ($cmd_file) {
         assert_secureboot_status(1) if get_var('SECUREBOOT');
+        install_package('heaptrack', trup_apply => 1);
         prepare_ltp_env() if (is_sle('<12'));
         check_kernel_taint($self, 1);
         init_ltp_tests($cmd_file);
+        script_run('LD_PRELOAD=/usr/lib64/libdl.so.2');
+        assert_script_run('echo 0 >/proc/sys/kernel/yama/ptrace_scope');
         schedule_tests($cmd_file);
     }
 }

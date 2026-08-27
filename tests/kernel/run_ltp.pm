@@ -403,6 +403,15 @@ sub run {
         $self->{oprofile_pid} = background_script_run('operf -ls -d /tmp/ltp_oprofile &>/tmp/ltp_oprofile.txt');
     }
 
+    script_run("pushd ~/");
+    script_run("rm -f heaptrack.*.zst");
+    assert_script_run('systemctl restart systemd-udevd');
+    my $udev_pid;
+    ($_, $udev_pid) = cmd_run('pgrep systemd-udevd');
+    chomp $udev_pid;
+    my $ht_pid = background_script_run("heaptrack -p $udev_pid &>heaptrack-$udev_pid.log");
+    script_run("popd");
+
     if (is_serial_terminal) {
         script_run("echo '$klog_stamp' > /dev/kmsg");
         # SLE11-SP4 doesn't support ignore_loglevel, due that stamp is not printed in console
@@ -418,6 +427,14 @@ sub run {
     my $test_log = wait_serial(qr/$fin_msg\d+\./, $timeout, 0, record_output => 1);
     my ($timed_out, $result_export) = $self->record_ltp_result($runfile, $test, $test_log, $fin_msg, thetime() - $start_time, $is_posix);
     $self->{timed_out} = $timed_out;
+
+    script_run('sleep 300', timeout => 330);
+    script_run("kill -s INT $ht_pid");
+    script_run("wait $ht_pid");
+    script_run("pushd ~/");
+    cmd_run("cat heaptrack-$udev_pid.log");
+    cmd_run("heaptrack -a heaptrack.*.zst");
+    script_run("popd");
 
     if ($test_log =~ qr/$fin_msg(\d+)\.$/) {
         $env{retval} = $1;
