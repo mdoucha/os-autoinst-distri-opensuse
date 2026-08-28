@@ -428,7 +428,12 @@ sub run {
     my ($timed_out, $result_export) = $self->record_ltp_result($runfile, $test, $test_log, $fin_msg, thetime() - $start_time, $is_posix);
     $self->{timed_out} = $timed_out;
 
-    script_run('sleep 300', timeout => 330);
+    for (1 .. 12) {
+        cmd_run('ps u -C systemd-udevd');
+        script_run('sleep 300', timeout => 330);
+    }
+
+    cmd_run('ps u -C systemd-udevd');
     script_run("kill -s INT $ht_pid");
     script_run("wait $ht_pid");
     script_run("pushd ~/");
