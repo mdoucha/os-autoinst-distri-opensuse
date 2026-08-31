@@ -428,12 +428,22 @@ sub run {
     my ($timed_out, $result_export) = $self->record_ltp_result($runfile, $test, $test_log, $fin_msg, thetime() - $start_time, $is_posix);
     $self->{timed_out} = $timed_out;
 
+    my $gdb_cmd = "gdb -p $udev_pid -batch -ex 'set pagination off' -ex 'thread apply all bt'";
+    cmd_run($gdb_cmd);
+
     for (1 .. 12) {
         cmd_run('ps u -C systemd-udevd');
         script_run('sleep 300', timeout => 330);
     }
 
     cmd_run('ps u -C systemd-udevd');
+
+    for (1 .. 2) {
+        cmd_run($gdb_cmd);
+        script_run('sleep 60', timeout => 330);
+    }
+
+    cmd_run($gdb_cmd);
     script_run("kill -s INT $ht_pid");
     script_run("wait $ht_pid");
     script_run("pushd ~/");
