@@ -76,7 +76,8 @@ sub run {
     # module is used by non-LTP tests, i.e. kernel-live-patching
     return unless (get_var('LTP_COMMAND_FILE'));
 
-    install_package('heaptrack', trup_apply => 1);
+    zypper_call('mr -e repo-debug');
+    install_package('heaptrack udev-debuginfo glibc-debuginfo', trup_apply => 1);
     check_kernel_taint($self, 1);
     prepare_ltp_env;
     init_ltp_tests($cmd_file);
