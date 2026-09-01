@@ -370,7 +370,7 @@ sub upload_oprofile {
         }
     }
     else {
-        assert_script_run("kill -s INT $pid && wait $pid");
+        script_run("kill -s INT $pid && wait $pid");
     }
 
     assert_script_run('cd /tmp');
