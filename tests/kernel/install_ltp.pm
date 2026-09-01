@@ -391,7 +391,8 @@ sub run {
         loadtest_kernel 'boot_ltp';
     } elsif ($cmd_file) {
         assert_secureboot_status(1) if get_var('SECUREBOOT');
-        install_package('heaptrack', trup_apply => 1);
+        zypper_call('mr -e repo-debug');
+        install_package('heaptrack udev-debuginfo glibc-debuginfo', trup_apply => 1);
         prepare_ltp_env() if (is_sle('<12'));
         check_kernel_taint($self, 1);
         init_ltp_tests($cmd_file);
