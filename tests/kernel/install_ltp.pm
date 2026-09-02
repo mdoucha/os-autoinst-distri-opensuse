@@ -392,12 +392,12 @@ sub run {
     } elsif ($cmd_file) {
         assert_secureboot_status(1) if get_var('SECUREBOOT');
         zypper_call('mr -e repo-debug');
-        install_package('heaptrack udev-debuginfo glibc-debuginfo', trup_apply => 1);
+        #install_package('heaptrack udev-debuginfo glibc-debuginfo', trup_apply => 1);
         prepare_ltp_env() if (is_sle('<12'));
         check_kernel_taint($self, 1);
         init_ltp_tests($cmd_file);
-        script_run('LD_PRELOAD=/usr/lib64/libdl.so.2');
-        assert_script_run('echo 0 >/proc/sys/kernel/yama/ptrace_scope');
+        #script_run('LD_PRELOAD=/usr/lib64/libdl.so.2');
+        #assert_script_run('echo 0 >/proc/sys/kernel/yama/ptrace_scope');
         schedule_tests($cmd_file);
     }
 }
