@@ -405,11 +405,11 @@ sub run {
 
     script_run("pushd ~/");
     script_run("rm -f heaptrack.*.zst");
-    assert_script_run('systemctl restart systemd-udevd');
+#    assert_script_run('systemctl restart systemd-udevd');
     my $udev_pid;
     ($_, $udev_pid) = cmd_run('pgrep systemd-udevd');
     chomp $udev_pid;
-    my $ht_pid = background_script_run("heaptrack -p $udev_pid &>heaptrack-$udev_pid.log");
+#    my $ht_pid = background_script_run("heaptrack -p $udev_pid &>heaptrack-$udev_pid.log");
     script_run("popd");
 
     if (is_serial_terminal) {
@@ -438,12 +438,12 @@ sub run {
 
     cmd_run('ps u -C systemd-udevd');
     cmd_run($gdb_cmd);
-    script_run("kill -s INT $ht_pid");
-    script_run("wait $ht_pid");
-    script_run("pushd ~/");
-    cmd_run("cat heaptrack-$udev_pid.log");
-    cmd_run("heaptrack -a heaptrack.*.zst");
-    script_run("popd");
+#    script_run("kill -s INT $ht_pid");
+#    script_run("wait $ht_pid");
+#    script_run("pushd ~/");
+#    cmd_run("cat heaptrack-$udev_pid.log");
+#    cmd_run("heaptrack -a heaptrack.*.zst");
+#    script_run("popd");
 
     if ($test_log =~ qr/$fin_msg(\d+)\.$/) {
         $env{retval} = $1;
