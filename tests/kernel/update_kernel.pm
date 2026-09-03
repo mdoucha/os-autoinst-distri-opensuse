@@ -530,6 +530,7 @@ sub install_requirements {
 sub run {
     my $self = shift;
     my $kernel_package = get_kernel_flavor;
+    my $debug_repo = get_var('KERNEL_DEBUG_REPO');
 
     $self->{repos} = {};
 
@@ -547,6 +548,12 @@ sub run {
     # previous kernel update (e.g. a republished KOTD image) so the
     # installation below can proceed with fresh settings.
     cleanup_kernel_repos;
+
+    if ($debug_repo) {
+        zypper_call("ar -G $debug_repo kernel_debug");
+        zypper_call("in -f -r kernel_debug systemd udev udev-debuginfo");
+        zypper_call("al udev");
+    }
 
     my $repo = get_var('KOTD_REPO');
     $repo = get_var('OS_TEST_REPOS') if (!defined($repo) && (is_sle_micro('>=6.0') || (is_sle('16+'))));
