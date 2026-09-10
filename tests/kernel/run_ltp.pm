@@ -438,6 +438,8 @@ sub run {
 
     cmd_run('ps u -C systemd-udevd');
     cmd_run($gdb_cmd);
+    script_run('journalctl -b0 -u systemd-udevd | gzip -9 >/tmp/udev.log.gz', timeout => 300);
+    upload_logs('/tmp/udev.log.gz');
 #    script_run("kill -s INT $ht_pid");
 #    script_run("wait $ht_pid");
 #    script_run("pushd ~/");
