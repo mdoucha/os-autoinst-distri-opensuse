@@ -22,6 +22,11 @@ use kdump_utils;
 use kernel;
 use package_utils;
 
+my $udevd_service_conf = <<'EOF';
+[Service]
+Environment=GLIBC_TUNABLES=glibc.malloc.tcache_count=0:glibc.malloc.mxfast=0
+EOF
+
 sub run {
     my ($self) = @_;
     my $cmd_file = get_var('LTP_COMMAND_FILE') || '';
@@ -81,8 +86,11 @@ sub run {
     check_kernel_taint($self, 1);
     prepare_ltp_env;
     init_ltp_tests($cmd_file);
-    script_run('LD_PRELOAD=/usr/lib64/libdl.so.2');
-    assert_script_run('echo 0 >/proc/sys/kernel/yama/ptrace_scope');
+    #script_run('LD_PRELOAD=/usr/lib64/libdl.so.2');
+    #assert_script_run('echo 0 >/proc/sys/kernel/yama/ptrace_scope');
+    assert_script_run('mkdir -p /etc/systemd/system/systemd-udevd.service.d');
+    write_sut_file('/etc/systemd/system/systemd-udevd.service.d/glibc-tunables.conf', $udevd_service_conf);
+    assert_script_run('systemctl daemon-reload');
 
     # If the command file (runtest file) is set then we dynamically schedule
     # the test and shutdown modules.

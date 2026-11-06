@@ -31,6 +31,11 @@ use kernel;
 use transactional;
 use package_utils;
 
+my $udevd_service_conf = <<'EOF';
+[Service]
+Environment=GLIBC_TUNABLES=glibc.malloc.tcache_count=0:glibc.malloc.mxfast=0
+EOF
+
 sub add_we_repo_if_available {
     # opensuse doesn't have extensions
     return if (is_opensuse || is_jeos);
@@ -406,6 +411,9 @@ sub run {
         init_ltp_tests($cmd_file);
         #script_run('LD_PRELOAD=/usr/lib64/libdl.so.2');
         #assert_script_run('echo 0 >/proc/sys/kernel/yama/ptrace_scope');
+        assert_script_run('mkdir -p /etc/systemd/system/systemd-udevd.service.d');
+        write_sut_file('/etc/systemd/system/systemd-udevd.service.d/glibc-tunables.conf', $udevd_service_conf);
+        assert_script_run('systemctl daemon-reload');
         schedule_tests($cmd_file);
     }
 }
