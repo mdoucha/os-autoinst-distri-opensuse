@@ -23,6 +23,7 @@ BEGIN {
     our @EXPORT = qw(
       add_serial_console
       get_login_message
+      get_ssh_key
       download_file
       login
       prepare_serial_console
@@ -130,6 +131,37 @@ sub get_login_message {
       : is_sle_micro() ? qr/Welcome to SUSE Linux.* Micro .*\($arch\)/
       : is_leap() ? qr/Welcome to openSUSE Leap.*/
       : qr/Welcome to openSUSE Tumbleweed 20.*/;
+}
+
+=head2 get_ssh_key
+
+    get_ssh_key($filename);
+
+Upload SSH key pair to controller host, read and delete both files,
+then return the key data as a pair of strings.
+
+Example usage: C<my ($privkey, $pubkey) = get_ssh_key('id_rsa');>
+=cut
+
+sub get_ssh_key {
+    my $filename = shift;
+
+    die 'SSH key filename argument is required' unless $filename;
+    my $sutfile = $filename;
+    $sutfile = script_output("realpath ~/.ssh/$filename")
+      unless substr($filename, 0, 1) eq '/';
+    my $file = path($sutfile);
+    $filename = $file->basename;
+    upload_asset($sutfile);
+    $file = path("assets_private/$filename");
+    my $privkey = $file->slurp;
+    $file->remove;
+    $sutfile = "$sutfile.pub";
+    upload_asset($sutfile);
+    my $file = path("assets_private/$filename.pub");
+    my $pubkey = $file->slurp;
+    $file->remove;
+    return ($privkey, $pubkey);
 }
 
 =head2 set_serial_prompt
