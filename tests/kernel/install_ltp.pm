@@ -297,6 +297,19 @@ sub run {
     # cockpit login message sporadically breaks login in boot_ltp
     script_run '[ -f /etc/issue.d/cockpit.issue ] && rm /etc/issue.d/cockpit.issue';
 
+    assert_script_run('ssh-keygen -t ecdsa -m pem -f ~/.ssh/id_ecdsa -N "" -C ""');
+    my ($privkey, $pubkey) = get_ssh_key('id_ecdsa');
+    add_console(
+        'pubkey-serial-ssh',
+        'ssh-serial',
+        {
+            hostname => get_required_var('SUT_IP'),
+            username => 'root',
+            publickey => $pubkey,
+            privatekey => $privkey
+        });
+    select_console('pubkey-serial-ssh');
+
     # check kGraft if KGRAFT=1
     if (check_var("KGRAFT", '1') && !check_var('REMOVE_KGRAFT', '1')) {
         my $lp_tag = (is_sle('>=15-sp4') || is_sle_micro) ? 'lp' : 'lp-';
