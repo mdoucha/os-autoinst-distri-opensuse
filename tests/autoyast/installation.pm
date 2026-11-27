@@ -105,6 +105,8 @@ sub verify_timeout_and_check_screen {
 sub run {
     my ($self) = @_;
 
+    system 'ip addr &>ulogs/ip-addr.txt';
+    system 'ss -nl46 &>ulogs/listen-ports.txt';
     test_ayp_url unless get_var('IPXE_STATIC');
     my $test_data = get_test_suite_data();
     my @needles = qw(bios-boot nonexisting-package reboot-after-installation linuxrc-install-fail scc-invalid-url warning-pop-up autoyast-boot package-notification nvidia-validation-failed import-untrusted-gpg-key error-show-details);
